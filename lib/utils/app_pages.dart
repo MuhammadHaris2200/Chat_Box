@@ -15,12 +15,6 @@ class AppPages {
       AppRoutes.login: (context) => const Loginscreen(),
       AppRoutes.signUp: (context) => const Signup(),
       AppRoutes.home: (context) => const Homescreen(),
-
-
-
-
-
-      
     };
   }
 }

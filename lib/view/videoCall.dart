@@ -12,7 +12,7 @@ class _VideocallState extends State<Videocall> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Video Call"),
+        title: Text("Video "),
         centerTitle: true,
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/view/forgotPassword.dart';
 import 'package:chat_box/view/loginScreen.dart';
 import 'package:chat_box/view/onBoardingScreen.dart';
 import 'package:chat_box/view/signUp.dart';
@@ -14,7 +15,8 @@ class AppPages {
       AppRoutes.onBoarding: (context) => const OnboardingScreen(),
       AppRoutes.login: (context) => const Loginscreen(),
       AppRoutes.signUp: (context) => const Signup(),
-      AppRoutes.home: (context) => const Homescreen(),
+      AppRoutes.home: (context) => const HomeScreen(),
+      AppRoutes.forgot: (context) => const ForgotPassword()
     };
   }
 }

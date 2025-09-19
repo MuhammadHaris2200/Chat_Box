@@ -12,7 +12,7 @@ class _SplashscreenState extends State<Splashscreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 1),(){
+    Future.delayed(Duration(seconds: 2),(){
       Navigator.pushReplacementNamed(context, "/onBoarding");
     });
   }

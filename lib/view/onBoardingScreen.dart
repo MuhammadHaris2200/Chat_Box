@@ -114,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       print("Google Button Clicked");
                     },
                     icon: Image.asset(
-                      AppImages.googleLogo,
+                      AppImages.onBoardingGoogleLogo,
                       width: 40,
                       height: 40,
                       fit: BoxFit.cover,
@@ -129,18 +129,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Divider(color: Colors.white70, thickness: 1),
+                          padding: EdgeInsets.symmetric(horizontal: mq.width * .05),
+                          child: Divider(color: AppColors.white70, thickness: 1),
                         ),
                       ),
                       Text(
                         "OR",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(color: AppColors.whiteColor, fontSize: 16),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: Divider(color: Colors.white70, thickness: 1),
+                          padding: EdgeInsets.symmetric(horizontal: mq.width * .05),
+                          child: Divider(color: AppColors.white70, thickness: 1),
                         ),
                       ),
                     ],

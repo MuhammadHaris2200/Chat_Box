@@ -10,5 +10,6 @@ class AppRoutes{
   static const String videoCall = "/videoCall";
   static const String groupCall = "/groupVideoCall";
   static const String profile = "/profile";
+  static const String forgot = "/forgot";
 
 }

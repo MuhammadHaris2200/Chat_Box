@@ -87,31 +87,64 @@ class _LoginscreenState extends State<Loginscreen> {
               ),
             ),
 
-            SizedBox(height: mq.height * .20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.forgot);
+                    },
+                    child: Text("Forgot Password?"),
+                  ),
+                ),
+              ],
+            ),
 
-            Container(
-              width: mq.width * .8,
-              height: mq.height * .05,
-              decoration: BoxDecoration(
-                color: AppColors.teal,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Center(
-                child: Text(
-                  "Log in",
-                  style: TextStyle(color: AppColors.whiteColor),
+            SizedBox(height: mq.height * .15),
+
+            InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.home);
+              },
+              child: Container(
+                width: mq.width * .8,
+                height: mq.height * .05,
+                decoration: BoxDecoration(
+                  color: AppColors.teal,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Center(
+                  child: Text(
+                    "Log in",
+                    style: TextStyle(color: AppColors.whiteColor),
+                  ),
                 ),
               ),
             ),
-
 
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, AppRoutes.forgot);
               },
-              child: Text(
-                "Forgot Password?",
-                style: TextStyle(color: AppColors.teal),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(color: AppColors.teal),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.signUp);
+                    },
+                    child: Text(
+                      "Sign up",
+                      style: TextStyle(color: AppColors.blackColor),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

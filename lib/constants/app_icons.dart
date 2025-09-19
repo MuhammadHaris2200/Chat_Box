@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AppIcons{
+class AppIcons {
   ///Material Icons
   static const IconData materialSearchIcon = Icons.search;
   static const IconData materialCallIcon = Icons.call;
@@ -9,10 +9,7 @@ class AppIcons{
   static const IconData materialMessageIcon = Icons.message;
   static const IconData materialContactIcon = Icons.account_circle_outlined;
   static const IconData materialSettings = Icons.settings;
-
-
-
-
+  static const IconData materialAdd = Icons.add;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;
@@ -21,4 +18,5 @@ class AppIcons{
   static const IconData cupertinoMessageCall = CupertinoIcons.chat_bubble_text;
   static const IconData cupertinoContacts = CupertinoIcons.person_circle;
   static const IconData cupertinoSettings = CupertinoIcons.settings;
+  static const IconData cupertinoAdd = CupertinoIcons.add;
 }

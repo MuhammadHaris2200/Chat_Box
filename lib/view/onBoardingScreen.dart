@@ -129,18 +129,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: mq.width * .05),
-                          child: Divider(color: AppColors.white70, thickness: 1),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mq.width * .05,
+                          ),
+                          child: Divider(
+                            color: AppColors.white70,
+                            thickness: 1,
+                          ),
                         ),
                       ),
                       Text(
                         "OR",
-                        style: TextStyle(color: AppColors.whiteColor, fontSize: 16),
+                        style: TextStyle(
+                          color: AppColors.whiteColor,
+                          fontSize: 16,
+                        ),
                       ),
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: mq.width * .05),
-                          child: Divider(color: AppColors.white70, thickness: 1),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mq.width * .05,
+                          ),
+                          child: Divider(
+                            color: AppColors.white70,
+                            thickness: 1,
+                          ),
                         ),
                       ),
                     ],
@@ -150,19 +163,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   SizedBox(height: mq.height * .03),
 
                   ///Container of sign up with email text
-                  Container(
-                    width: mq.width * .8,
-                    height: mq.height * .05,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Sign up with email",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, "/signUp");
+                    },
+                    child: Container(
+                      width: mq.width * .8,
+                      height: mq.height * .05,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Sign up with email",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),

@@ -11,4 +11,5 @@ class AppImages {
   static const subText = "assets/images/subText.png";
   static const orText = "assets/images/Or-uihut (1).png";
   static const loginPageLogo = "assets/images/loginLogo.png";
+  static const randomImage = "assets/images/random.png";
 }

@@ -1,5 +1,6 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_images.dart';
+import 'package:chat_box/widgets/friend_status.dart';
 import 'package:chat_box/widgets/my_status.dart';
 import 'package:flutter/material.dart';
 
@@ -47,38 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: EdgeInsets.only(top: mq.height * .05),
         child: Row(
           children: [
-            // 🔹 My Status (static)
+           ///My status widget
             MyStatus(),
 
-            // 🔹 Friends List (scrollable)
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(10, (index) {
-                    return Padding(
-                      padding: EdgeInsets.only(left: mq.width * .05),
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            radius: 35,
-                            backgroundColor: Colors.white,
-                            child: CircleAvatar(
-                              radius: 32,
-                              backgroundImage: AssetImage(
-                                "assets/images/random.png",
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text("User $index"),
-                        ],
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ),
+            ///Friends scrollable status widget
+            FriendsStatusList()
           ],
         ),
       ),

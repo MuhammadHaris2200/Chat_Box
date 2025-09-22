@@ -1,16 +1,35 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_images.dart';
 import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/modelView/provider/signIn_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Loginscreen extends StatefulWidget {
-  const Loginscreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Loginscreen> createState() => _LoginscreenState();
+  State<LoginScreen> createState() => _LoginscreenState();
 }
 
-class _LoginscreenState extends State<Loginscreen> {
+class _LoginscreenState extends State<LoginScreen> {
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     ///Media query initialization
@@ -22,8 +41,11 @@ class _LoginscreenState extends State<Loginscreen> {
         child: Column(
           children: [
             SizedBox(height: mq.height * .05),
+
             Center(child: Image.asset(AppImages.loginPageLogo)),
+
             SizedBox(height: mq.height * .03),
+
             Text(
               "Get chatting with friends and family today by\n       "
               "signing up for our chat app!",
@@ -47,7 +69,9 @@ class _LoginscreenState extends State<Loginscreen> {
                     child: Divider(color: AppColors.lightGrey, thickness: 1),
                   ),
                 ),
+
                 Text("OR", style: TextStyle(color: AppColors.greyColor)),
+
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: mq.width * .07),
@@ -62,6 +86,7 @@ class _LoginscreenState extends State<Loginscreen> {
             SizedBox(
               width: mq.width * .87,
               child: TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   hintText: "Your email",
                   hintStyle: TextStyle(
@@ -77,6 +102,7 @@ class _LoginscreenState extends State<Loginscreen> {
             SizedBox(
               width: mq.width * .87,
               child: TextField(
+                controller: _passwordController,
                 decoration: InputDecoration(
                   hintText: "Password",
                   hintStyle: TextStyle(
@@ -96,17 +122,34 @@ class _LoginscreenState extends State<Loginscreen> {
                     onPressed: () {
                       Navigator.pushNamed(context, AppRoutes.forgot);
                     },
-                    child: Text("Forgot Password?"),
+                    child: Text(
+                      "Forgot Password?",
+                      style: TextStyle(color: AppColors.blackColor),
+                    ),
                   ),
                 ),
               ],
             ),
 
-            SizedBox(height: mq.height * .15),
+            SizedBox(height: mq.height * .12),
 
             InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.home);
+              onTap: () async {
+                final signInProvider = context.read<SigninProvider>();
+
+                signInProvider.email = _emailController.text;
+                signInProvider.password = _passwordController.text;
+
+                try {
+                  bool success = await signInProvider.signIn();
+                  if (success) {
+                    Navigator.pushReplacementNamed(context, AppRoutes.home);
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
               },
               child: Container(
                 width: mq.width * .8,

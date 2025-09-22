@@ -1,5 +1,6 @@
+import 'package:chat_box/modelView/provider/signUp_provider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_images.dart';
 import '../constants/app_routes.dart';
@@ -12,6 +13,30 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+  //Controllers
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     ///Initialization of media query
@@ -46,7 +71,8 @@ class _SignupState extends State<Signup> {
             ///Text field of name
             SizedBox(
               width: mq.width * .87,
-              child: TextField(
+              child: TextFormField(
+                controller: _nameController,
                 decoration: InputDecoration(
                   hintText: "Your name",
                   hintStyle: TextStyle(
@@ -63,7 +89,8 @@ class _SignupState extends State<Signup> {
             ///Text field of password
             SizedBox(
               width: mq.width * .87,
-              child: TextField(
+              child: TextFormField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   hintText: "Your email",
                   hintStyle: TextStyle(
@@ -80,7 +107,8 @@ class _SignupState extends State<Signup> {
             ///Text field of password
             SizedBox(
               width: mq.width * .87,
-              child: TextField(
+              child: TextFormField(
+                controller: _passwordController,
                 decoration: InputDecoration(
                   hintText: "Password",
                   hintStyle: TextStyle(
@@ -91,13 +119,14 @@ class _SignupState extends State<Signup> {
               ),
             ),
 
-            ///For space between text field of confirm password and confirm password
+            ///For space between text field of password and confirm password
             SizedBox(height: mq.height * .04),
 
-            ///Te
+            ///Confirm password text field
             SizedBox(
               width: mq.width * .87,
-              child: TextField(
+              child: TextFormField(
+                controller: _confirmPasswordController,
                 decoration: InputDecoration(
                   hintText: "Confirm password",
                   hintStyle: TextStyle(
@@ -108,11 +137,32 @@ class _SignupState extends State<Signup> {
               ),
             ),
 
+            //for space between text field of confirm password and sign up button
             SizedBox(height: mq.height * .20),
 
             InkWell(
-              onTap: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.home);
+              onTap: () async {
+                final signupProvider = Provider.of<SignupProvider>(
+                  context,
+                  listen: false,
+                );
+
+                signupProvider.name = _nameController.text;
+                signupProvider.email = _emailController.text;
+                signupProvider.password = _passwordController.text;
+                signupProvider.confirmPassword =
+                    _confirmPasswordController.text;
+
+                try {
+                  bool success = await signupProvider.signUp();
+                  if (success) {
+                    Navigator.pushReplacementNamed(context, AppRoutes.home);
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.toString())));
+                }
               },
               child: Container(
                 width: mq.width * .8,

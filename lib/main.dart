@@ -1,9 +1,26 @@
 import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/modelView/provider/signIn_provider.dart';
+import 'package:chat_box/modelView/provider/signUp_provider.dart';
+import 'package:chat_box/services/login_authentication/email_password.dart';
 import 'package:chat_box/utils/app_pages.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  final authService = EmailPassword();
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SignupProvider(authService)),
+        ChangeNotifierProvider(create: (create) => SigninProvider(authService)),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.splash,
       routes: AppPages.getRoutes(),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/view/forgotPassword.dart';
-import 'package:chat_box/view/loginScreen.dart';
+import 'package:chat_box/view/signIn.dart';
 import 'package:chat_box/view/onBoardingScreen.dart';
 import 'package:chat_box/view/signUp.dart';
 import 'package:chat_box/view/splashScreen.dart';
@@ -13,10 +13,10 @@ class AppPages {
     return {
       AppRoutes.splash: (context) => const Splashscreen(),
       AppRoutes.onBoarding: (context) => const OnboardingScreen(),
-      AppRoutes.login: (context) => const Loginscreen(),
+      AppRoutes.login: (context) => const LoginScreen(),
       AppRoutes.signUp: (context) => const Signup(),
       AppRoutes.home: (context) => const HomeScreen(),
-      AppRoutes.forgot: (context) => const ForgotPassword()
+      AppRoutes.forgot: (context) => const ForgotPassword(),
     };
   }
 }

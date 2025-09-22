@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 class FriendsStatusList extends StatelessWidget {
   const FriendsStatusList({super.key});
 
@@ -12,26 +14,35 @@ class FriendsStatusList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 100, // status circle ki height
-      child: ListView.builder(
+    ///Initialization of media query
+    final mq = MediaQuery.of(context).size;
+    return Expanded(
+      child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        itemCount: friends.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 35,
-                  backgroundImage: AssetImage(friends[index]),
-                ),
-                const SizedBox(height: 5),
-                Text("Friend ${index + 1}"),
-              ],
-            ),
-          );
-        },
+        child: Row(
+          children: List.generate(10, (index) {
+            return Padding(
+              padding: EdgeInsets.only(left: mq.width * .05),
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.whiteColor, width: 1),
+                    ),
+                    child: CircleAvatar(
+                      radius: 35,
+                      backgroundColor: AppColors.whiteColor,
+                      backgroundImage: AssetImage("assets/images/random.png"),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text("User $index"),
+                ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

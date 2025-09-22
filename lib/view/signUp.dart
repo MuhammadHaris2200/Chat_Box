@@ -13,12 +13,14 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  //Controllers
+  ///Controllers which initialize late
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
 
+
+  ///Init state
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,8 @@ class _SignupState extends State<Signup> {
     _confirmPasswordController = TextEditingController();
   }
 
+
+  ///dispose
   @override
   void dispose() {
     super.dispose();
@@ -137,9 +141,11 @@ class _SignupState extends State<Signup> {
               ),
             ),
 
-            //for space between text field of confirm password and sign up button
+            ///for space between text field of confirm password and sign up button
             SizedBox(height: mq.height * .20),
 
+
+            ///Create an account button
             InkWell(
               onTap: () async {
                 final signupProvider = Provider.of<SignupProvider>(
@@ -147,11 +153,11 @@ class _SignupState extends State<Signup> {
                   listen: false,
                 );
 
-                signupProvider.name = _nameController.text;
-                signupProvider.email = _emailController.text;
-                signupProvider.password = _passwordController.text;
+                signupProvider.name = _nameController.text.trim();
+                signupProvider.email = _emailController.text.trim();
+                signupProvider.password = _passwordController.text.trim();
                 signupProvider.confirmPassword =
-                    _confirmPasswordController.text;
+                    _confirmPasswordController.text.trim();
 
                 try {
                   bool success = await signupProvider.signUp();

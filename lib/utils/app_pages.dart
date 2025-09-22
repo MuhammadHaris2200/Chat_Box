@@ -1,6 +1,6 @@
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/view/forgotPassword.dart';
-import 'package:chat_box/view/signIn.dart';
+import 'package:chat_box/view/login.dart';
 import 'package:chat_box/view/onBoardingScreen.dart';
 import 'package:chat_box/view/signUp.dart';
 import 'package:chat_box/view/splashScreen.dart';

@@ -8,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  final authService = EmailPassword();
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
+  final authService = EmailPassword();
   runApp(
     MultiProvider(
       providers: [
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.splash,
+      initialRoute: AppRoutes.onBoarding,
       routes: AppPages.getRoutes(),
     );
   }

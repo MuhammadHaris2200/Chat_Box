@@ -9,13 +9,16 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginscreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginscreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
+  ///Controllers which initialize late
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
 
+
+  ///Init state
   @override
   void initState() {
     super.initState();
@@ -23,6 +26,8 @@ class _LoginscreenState extends State<LoginScreen> {
     _passwordController = TextEditingController();
   }
 
+
+  ///dispose
   @override
   void dispose() {
     super.dispose();
@@ -40,27 +45,38 @@ class _LoginscreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            ///For space
             SizedBox(height: mq.height * .05),
 
+
+            ///Log in logo
             Center(child: Image.asset(AppImages.loginPageLogo)),
 
+
+            ///For space between log in logo and text
             SizedBox(height: mq.height * .03),
 
+            ///Text
             Text(
               "Get chatting with friends and family today by\n       "
               "signing up for our chat app!",
               style: TextStyle(color: AppColors.greyColor),
             ),
 
+            ///For space between text and google logo
             SizedBox(height: mq.height * .03),
 
+            ///Google logo for google sign in
             IconButton(
               onPressed: () {},
               icon: Image.asset(AppImages.loginGoogleLogo),
             ),
 
+
+            ///For space between google logo and OR text
             SizedBox(height: mq.height * .03),
 
+            ///OR text in row widget
             Row(
               children: [
                 Expanded(
@@ -81,8 +97,12 @@ class _LoginscreenState extends State<LoginScreen> {
               ],
             ),
 
+
+            ///For space between OR text and email text field
             SizedBox(height: mq.height * .03),
 
+
+            ///Email text field
             SizedBox(
               width: mq.width * .87,
               child: TextField(
@@ -97,8 +117,12 @@ class _LoginscreenState extends State<LoginScreen> {
               ),
             ),
 
+
+            ///For space between email text field and password text field
             SizedBox(height: mq.height * .04),
 
+
+            ///Password text field
             SizedBox(
               width: mq.width * .87,
               child: TextField(
@@ -113,6 +137,8 @@ class _LoginscreenState extends State<LoginScreen> {
               ),
             ),
 
+
+            ///Forgot password in row widget
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -131,14 +157,18 @@ class _LoginscreenState extends State<LoginScreen> {
               ],
             ),
 
+
+            ///For space between fields and log in button
             SizedBox(height: mq.height * .12),
 
+
+            ///Log in button
             InkWell(
               onTap: () async {
                 final signInProvider = context.read<SigninProvider>();
 
-                signInProvider.email = _emailController.text;
-                signInProvider.password = _passwordController.text;
+                signInProvider.email = _emailController.text.trim();
+                signInProvider.password = _passwordController.text.trim();
 
                 try {
                   bool success = await signInProvider.signIn();
@@ -167,6 +197,8 @@ class _LoginscreenState extends State<LoginScreen> {
               ),
             ),
 
+
+            ///Sign up button
             TextButton(
               onPressed: () {
                 Navigator.pushNamed(context, AppRoutes.forgot);

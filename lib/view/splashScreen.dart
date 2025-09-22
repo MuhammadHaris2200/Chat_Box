@@ -20,6 +20,7 @@ class _SplashscreenState extends State<Splashscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
+        ///Chat box image
         child: Image.asset(AppImages.splashImage),
       ),
     );

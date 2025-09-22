@@ -17,6 +17,11 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
 
+  ///Global form key for validation
+  final _formKey = GlobalKey<FormState>();
+
+  ///Password visibility state
+  bool _isPasswordVisible = false;
 
   ///Init state
   @override
@@ -25,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
   }
-
 
   ///dispose
   @override
@@ -42,187 +46,211 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ///For space
-            SizedBox(height: mq.height * .05),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ///For space
+              SizedBox(height: mq.height * .05),
 
+              ///Log in logo
+              Center(child: Image.asset(AppImages.loginPageLogo)),
 
-            ///Log in logo
-            Center(child: Image.asset(AppImages.loginPageLogo)),
+              ///For space between log in logo and text
+              SizedBox(height: mq.height * .03),
 
-
-            ///For space between log in logo and text
-            SizedBox(height: mq.height * .03),
-
-            ///Text
-            Text(
-              "Get chatting with friends and family today by\n       "
-              "signing up for our chat app!",
-              style: TextStyle(color: AppColors.greyColor),
-            ),
-
-            ///For space between text and google logo
-            SizedBox(height: mq.height * .03),
-
-            ///Google logo for google sign in
-            IconButton(
-              onPressed: () {},
-              icon: Image.asset(AppImages.loginGoogleLogo),
-            ),
-
-
-            ///For space between google logo and OR text
-            SizedBox(height: mq.height * .03),
-
-            ///OR text in row widget
-            Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: mq.width * .07),
-                    child: Divider(color: AppColors.lightGrey, thickness: 1),
-                  ),
-                ),
-
-                Text("OR", style: TextStyle(color: AppColors.greyColor)),
-
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: mq.width * .07),
-                    child: Divider(color: AppColors.lightGrey, thickness: 1),
-                  ),
-                ),
-              ],
-            ),
-
-
-            ///For space between OR text and email text field
-            SizedBox(height: mq.height * .03),
-
-
-            ///Email text field
-            SizedBox(
-              width: mq.width * .87,
-              child: TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: "Your email",
-                  hintStyle: TextStyle(
-                    color: AppColors.teal,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+              ///Text
+              Text(
+                "Get chatting with friends and family today by\n       "
+                "signing up for our chat app!",
+                style: TextStyle(color: AppColors.greyColor),
               ),
-            ),
 
+              ///For space between text and google logo
+              SizedBox(height: mq.height * .03),
 
-            ///For space between email text field and password text field
-            SizedBox(height: mq.height * .04),
-
-
-            ///Password text field
-            SizedBox(
-              width: mq.width * .87,
-              child: TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  hintStyle: TextStyle(
-                    color: AppColors.teal,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+              ///Google logo for google sign in
+              IconButton(
+                onPressed: () {},
+                icon: Image.asset(AppImages.loginGoogleLogo),
               ),
-            ),
 
+              ///For space between google logo and OR text
+              SizedBox(height: mq.height * .03),
 
-            ///Forgot password in row widget
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.forgot);
-                    },
-                    child: Text(
-                      "Forgot Password?",
-                      style: TextStyle(color: AppColors.blackColor),
+              ///OR text in row widget
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: mq.width * .07),
+                      child: Divider(color: AppColors.lightGrey, thickness: 1),
                     ),
                   ),
-                ),
-              ],
-            ),
 
+                  Text("OR", style: TextStyle(color: AppColors.greyColor)),
 
-            ///For space between fields and log in button
-            SizedBox(height: mq.height * .12),
-
-
-            ///Log in button
-            InkWell(
-              onTap: () async {
-                final signInProvider = context.read<SigninProvider>();
-
-                signInProvider.email = _emailController.text.trim();
-                signInProvider.password = _passwordController.text.trim();
-
-                try {
-                  bool success = await signInProvider.signIn();
-                  if (success) {
-                    Navigator.pushReplacementNamed(context, AppRoutes.home);
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(e.toString())));
-                }
-              },
-              child: Container(
-                width: mq.width * .8,
-                height: mq.height * .05,
-                decoration: BoxDecoration(
-                  color: AppColors.teal,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Center(
-                  child: Text(
-                    "Log in",
-                    style: TextStyle(color: AppColors.whiteColor),
-                  ),
-                ),
-              ),
-            ),
-
-
-            ///Sign up button
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.forgot);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have an account?",
-                    style: TextStyle(color: AppColors.teal),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.signUp);
-                    },
-                    child: Text(
-                      "Sign up",
-                      style: TextStyle(color: AppColors.blackColor),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: mq.width * .07),
+                      child: Divider(color: AppColors.lightGrey, thickness: 1),
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+
+              ///For space between OR text and email text field
+              SizedBox(height: mq.height * .03),
+
+              ///Email text field
+              SizedBox(
+                width: mq.width * .87,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Email is required";
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return "Enter a valid email";
+                    }
+                    return null;
+                  },
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: "Your email",
+                    hintStyle: TextStyle(
+                      color: AppColors.teal,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+
+              ///For space between email text field and password text field
+              SizedBox(height: mq.height * .04),
+
+              ///Password text field
+              SizedBox(
+                width: mq.width * .87,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Password is required";
+                    }
+                    if (value.length > 6) {
+                      return "Password must be at least 6 characters";
+                    }
+                    return null;
+                  },
+                  controller: _passwordController,
+                  obscureText: !_isPasswordVisible,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    hintStyle: TextStyle(
+                      color: AppColors.teal,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: AppColors.blackColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              ///Forgot password in row widget
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.forgot);
+                      },
+                      child: Text(
+                        "Forgot Password?",
+                        style: TextStyle(color: AppColors.blackColor),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              ///For space between fields and log in button
+              SizedBox(height: mq.height * .12),
+
+              ///Log in button
+              InkWell(
+                onTap: () async {
+                  final signInProvider = context.read<SigninProvider>();
+
+                  signInProvider.email = _emailController.text.trim();
+                  signInProvider.password = _passwordController.text.trim();
+
+                  try {
+                    bool success = await signInProvider.signIn();
+                    if (success) {
+                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
+                },
+                child: Container(
+                  width: mq.width * .8,
+                  height: mq.height * .05,
+                  decoration: BoxDecoration(
+                    color: AppColors.teal,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Log in",
+                      style: TextStyle(color: AppColors.whiteColor),
+                    ),
+                  ),
+                ),
+              ),
+
+              ///Sign up button
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.forgot);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account?",
+                      style: TextStyle(color: AppColors.teal),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.signUp);
+                      },
+                      child: Text(
+                        "Sign up",
+                        style: TextStyle(color: AppColors.blackColor),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

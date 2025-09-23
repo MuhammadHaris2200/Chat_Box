@@ -1,4 +1,5 @@
 import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/modelView/provider/forgot_provider.dart';
 import 'package:chat_box/modelView/provider/signIn_provider.dart';
 import 'package:chat_box/modelView/provider/signUp_provider.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
@@ -16,7 +17,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SignupProvider(authService)),
-        ChangeNotifierProvider(create: (create) => SigninProvider(authService)),
+        ChangeNotifierProvider(create: (create) => SignInProvider(authService)),
+        ChangeNotifierProvider(create: (context) => ForgotProvider(authService))
       ],
       child: MyApp(),
     ),
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.signUp,
+      initialRoute: AppRoutes.forgot,
       routes: AppPages.getRoutes(),
     );
   }

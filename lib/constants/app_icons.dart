@@ -10,6 +10,7 @@ class AppIcons {
   static const IconData materialContactIcon = Icons.account_circle_outlined;
   static const IconData materialSettings = Icons.settings;
   static const IconData materialAdd = Icons.add;
+  static const IconData materialEmailIcon = Icons.email_outlined;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;
@@ -19,4 +20,5 @@ class AppIcons {
   static const IconData cupertinoContacts = CupertinoIcons.person_circle;
   static const IconData cupertinoSettings = CupertinoIcons.settings;
   static const IconData cupertinoAdd = CupertinoIcons.add;
+  static const IconData cupertinoEmailIcon = Icons.email_outlined;
 }

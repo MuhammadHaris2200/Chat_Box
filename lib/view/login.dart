@@ -193,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ///Log in button
               InkWell(
                 onTap: () async {
-                  final signInProvider = context.read<SigninProvider>();
+                  final signInProvider = context.read<SignInProvider>();
 
                   signInProvider.email = _emailController.text.trim();
                   signInProvider.password = _passwordController.text.trim();

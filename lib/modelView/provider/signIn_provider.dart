@@ -1,9 +1,9 @@
 import 'package:chat_box/services/login_authentication/email_password.dart';
 import 'package:flutter/foundation.dart';
 
-class SigninProvider extends ChangeNotifier {
+class SignInProvider extends ChangeNotifier {
   final EmailPassword _authService;
-  SigninProvider(this._authService);
+  SignInProvider(this._authService);
 
   String _email = "";
   String _password = "";

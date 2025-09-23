@@ -1,6 +1,7 @@
 import 'package:chat_box/modelView/provider/signUp_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../constants/app_colors.dart';
 import '../constants/app_images.dart';
 import '../constants/app_routes.dart';
@@ -39,11 +40,11 @@ class _SignupState extends State<Signup> {
   ///dispose
   @override
   void dispose() {
-    super.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -87,6 +88,7 @@ class _SignupState extends State<Signup> {
                     if (value == null || value.isEmpty) {
                       return "Name is required";
                     }
+                    return null;
                   },
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -137,7 +139,7 @@ class _SignupState extends State<Signup> {
                     if (value == null || value.isEmpty) {
                       return "Password is required";
                     }
-                    if (value.length > 6) {
+                    if (value.length < 6) {
                       return "Password must be at least 6 characters";
                     }
                     return null;

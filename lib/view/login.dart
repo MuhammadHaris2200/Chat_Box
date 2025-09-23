@@ -34,9 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
   ///dispose
   @override
   void dispose() {
-    super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -193,12 +193,15 @@ class _LoginScreenState extends State<LoginScreen> {
               ///Log in button
               InkWell(
                 onTap: () async {
+                  ///Sign in provider ko initialize kiya
                   final signInProvider = context.read<SignInProvider>();
 
+                  ///phir Sign in provider class k email or string ko controllers k through value di
                   signInProvider.email = _emailController.text.trim();
                   signInProvider.password = _passwordController.text.trim();
 
                   try {
+                    ///phir yaha kaha k agr successfully login hojae user tw home page pe le jao
                     bool success = await signInProvider.signIn();
                     if (success) {
                       Navigator.pushReplacementNamed(context, AppRoutes.home);

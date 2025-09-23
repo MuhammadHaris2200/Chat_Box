@@ -1,8 +1,10 @@
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/modelView/provider/forgot_provider.dart';
+import 'package:chat_box/modelView/provider/profile_provider.dart';
 import 'package:chat_box/modelView/provider/signIn_provider.dart';
 import 'package:chat_box/modelView/provider/signUp_provider.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
+import 'package:chat_box/services/profile_service.dart';
 import 'package:chat_box/utils/app_pages.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +15,19 @@ void main() async {
   await Firebase.initializeApp();
 
   final authService = EmailPassword();
+  final profileService = ProfileService();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SignupProvider(authService)),
         ChangeNotifierProvider(create: (create) => SignInProvider(authService)),
-        ChangeNotifierProvider(create: (context) => ForgotProvider(authService))
+        ChangeNotifierProvider(
+          create: (context) => ForgotProvider(authService),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileProvider(profileService),
+        ),
       ],
       child: MyApp(),
     ),

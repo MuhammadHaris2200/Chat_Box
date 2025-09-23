@@ -9,12 +9,10 @@ class ProfileService {
   ///Get current user profile pic
   Future<UserModel?> getProfilePic() async {
     try {
+      ///Current user ki uid
       final uid = _auth.currentUser!.uid;
 
-      if (uid == null) {
-        return null;
-      }
-
+      ///User k document se data doc variable ma stroe kr diya
       final doc = await _firestore.collection("users").doc(uid).get();
       if (doc.exists) {
         return UserModel.fromMap(doc.data()!);

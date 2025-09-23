@@ -4,7 +4,7 @@ import 'package:chat_box/modelView/provider/profile_provider.dart';
 import 'package:chat_box/modelView/provider/signIn_provider.dart';
 import 'package:chat_box/modelView/provider/signUp_provider.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
-import 'package:chat_box/services/profile_service.dart';
+import 'package:chat_box/services/my_service/profile_service.dart';
 import 'package:chat_box/utils/app_pages.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.forgot,
+      initialRoute: AppRoutes.splash,
       routes: AppPages.getRoutes(),
     );
   }

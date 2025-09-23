@@ -1,5 +1,5 @@
 import 'package:chat_box/model/user_model.dart';
-import 'package:chat_box/services/profile_service.dart';
+import 'package:chat_box/services/my_service/profile_service.dart';
 import 'package:flutter/cupertino.dart';
 
 class ProfileProvider extends ChangeNotifier {

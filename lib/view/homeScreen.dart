@@ -1,61 +1,96 @@
-import 'package:chat_box/constants/app_colors.dart';
-import 'package:chat_box/constants/app_images.dart';
-import 'package:chat_box/widgets/friend_status.dart';
-import 'package:chat_box/widgets/my_status.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+
+  void _onIconTap(int idx) {
+    setState(() => _currentIndex = idx);
+    _pageController.animateToPage(
+      idx,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  // call when message icon tapped
+  void _onMessagesTap() {
+    _onIconTap(0);
+    _showContactsBottomSheet();
+  }
+
   @override
   Widget build(BuildContext context) {
-    ///Media query initialization
-    final mq = MediaQuery.of(context).size;
-
-    ///App bar
     return Scaffold(
-      backgroundColor: AppColors.blackColor, // Scaffold background black
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
-        title: Padding(
-          padding: EdgeInsets.only(top: mq.height * .01),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(Icons.search, color: AppColors.whiteColor),
-
-              // Center -> Home Text
-              Text(
-                "Home",
-                style: TextStyle(color: AppColors.whiteColor, fontSize: 20),
-              ),
-
-              // Right side -> Person Icon
-              CircleAvatar(child: Image.asset(AppImages.randomImage)),
-            ],
+      appBar: AppBar(title: Text("Home")),
+      body: Column(
+        children: [
+          // Icons row
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.message),
+                  color: _currentIndex == 0 ? Colors.blue : Colors.grey,
+                  onPressed: _onMessagesTap,
+                ),
+                IconButton(
+                  icon: Icon(Icons.call),
+                  color: _currentIndex == 1 ? Colors.blue : Colors.grey,
+                  onPressed: () => _onIconTap(1),
+                ),
+                IconButton(
+                  icon: Icon(Icons.contacts),
+                  color: _currentIndex == 2 ? Colors.blue : Colors.grey,
+                  onPressed: () => _onIconTap(2),
+                ),
+                IconButton(
+                  icon: Icon(Icons.settings),
+                  color: _currentIndex == 3 ? Colors.blue : Colors.grey,
+                  onPressed: () => _onIconTap(3),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
 
-      ///Body
-      body: Padding(
-        padding: EdgeInsets.only(top: mq.height * .05),
-        child: Row(
-          children: [
-           ///My status widget
-            MyStatus(),
-
-            ///Friends scrollable status widget
-            FriendsStatusList()
-          ],
-        ),
+          // PageView
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (i) => setState(() => _currentIndex = i),
+              children: [
+                Center(
+                  child: Text(
+                    "Messages page (tap message icon to open contacts)",
+                  ),
+                ), // 0
+                Center(child: Text("Calls page")),
+                Center(child: Text("Contacts page")),
+                Center(child: Text("Settings page")),
+              ],
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  // we'll define _showContactsBottomSheet() below
+  void _showContactsBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return FractionallySizedBox(heightFactor: 0.85, child: Container());
+      },
     );
   }
 }

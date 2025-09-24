@@ -1,10 +1,10 @@
-import 'package:chat_box/modelView/provider/signUp_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/app_colors.dart';
 import '../constants/app_images.dart';
 import '../constants/app_routes.dart';
+import '../viewModel/provider/signUp_provider.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -211,7 +211,8 @@ class _SignupState extends State<Signup> {
                 ),
               ),
 
-              ///for space between text field of confirm password and sign up button
+              ///for space between text field of
+              ///confirm password and sign up button
               SizedBox(height: mq.height * .20),
 
               ///Create an account button

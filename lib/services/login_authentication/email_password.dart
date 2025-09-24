@@ -39,14 +39,24 @@ class EmailPassword {
         "about": "Hey there I am using ChatBox",
         "phone": "",
         "profilePic": "",
-        "createdAt": DateTime.now().millisecondsSinceEpoch,
+        "createdAt": FieldValue.serverTimestamp(),
       });
 
       ///is line ka mtlb agr firebase pe user ka account
       ///ban jae tw uska name bhi us account ma dal do
       await credential.user?.updateDisplayName(name);
+
+      ///or us user ko return krdo
       return credential.user;
     } on FirebaseAuthException catch (e) {
+      ///agr user ki email already in use ho to usko login krdo
+      if (e.code == 'email-already-in-use') {
+        final credential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        return credential.user;
+      }
       throw Exception(e.message);
     }
   }

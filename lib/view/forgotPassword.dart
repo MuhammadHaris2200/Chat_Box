@@ -1,8 +1,9 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
-import 'package:chat_box/modelView/provider/forgot_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../viewModel/provider/forgot_provider.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});

@@ -26,7 +26,7 @@ class UserModel {
       about: map["about"] ?? '',
       phone: map["phone"] ?? '',
       profilePic: map["profilePic"] ?? '',
-      createdAt: map["createdAt"] ?? '',
+      createdAt: map["createdAt"].toString(),
     );
   }
 

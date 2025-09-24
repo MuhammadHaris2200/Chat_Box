@@ -2,7 +2,7 @@ import 'package:chat_box/constants/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../modelView/provider/profile_provider.dart';
+import '../viewModel/provider/profile_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,13 +39,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ? Icon(AppIcons.cupertinoPersonIcon)
                       : null,
                 ),
-                SizedBox(height: 20,),
-                Text(user.name,style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                SizedBox(height: 20),
+                Text(
+                  user.name,
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
                 Text(user.email),
-                SizedBox(height: 20,),
-                ElevatedButton(onPressed: () {
-                 // profileProvider.updateProfilePic(user.profilePic);
-                }, child: Text("Update"))
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    // profileProvider.updateProfilePic(user.profilePic);
+                  },
+                  child: Text("Update"),
+                ),
               ],
             ),
     );

@@ -1,9 +1,10 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_images.dart';
 import 'package:chat_box/constants/app_routes.dart';
-import 'package:chat_box/modelView/provider/signIn_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../viewModel/provider/signIn_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

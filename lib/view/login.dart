@@ -1,6 +1,7 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_images.dart';
 import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/viewModel/provider/google_auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     ///Media query initialization
@@ -73,8 +76,50 @@ class _LoginScreenState extends State<LoginScreen> {
 
               ///Google logo for google sign in
               IconButton(
-                onPressed: () {},
-                icon: Image.asset(AppImages.loginGoogleLogo),
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _isLoading = true;
+                        });
+                        final googleAuthProvider = context
+                            .read<GoogleAuthProvider>();
+                        try {
+                          await googleAuthProvider.signInWithGoogle();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Signed in successfully"),
+                            behavior: SnackBarBehavior.floating,
+                            margin: EdgeInsets.all(16),
+                            shape: StadiumBorder(),
+                            backgroundColor: AppColors.blueColor,),
+                          );
+                          Navigator.pushReplacementNamed(
+                            context,
+                            AppRoutes.home,
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Error: $e"),
+                              behavior: SnackBarBehavior.floating,
+                              margin: const EdgeInsets.all(16),
+                              shape: StadiumBorder(),
+                              backgroundColor: AppColors.redColor,
+                            ),
+                          );
+                        } finally {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      },
+                icon: _isLoading
+                    ? SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(),
+                      )
+                    : Image.asset(AppImages.loginGoogleLogo),
               ),
 
               ///For space between google logo and OR text

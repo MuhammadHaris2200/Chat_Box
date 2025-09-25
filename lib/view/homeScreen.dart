@@ -1,4 +1,7 @@
+import 'package:chat_box/constants/app_icons.dart';
+import 'package:chat_box/viewModel/provider/google_auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,16 +25,49 @@ class _HomeScreenState extends State<HomeScreen> {
   // call when message icon tapped
   void _onMessagesTap() {
     _onIconTap(0);
-    _showContactsBottomSheet();
+   // _showContactsBottomSheet();
   }
 
   @override
   Widget build(BuildContext context) {
+    ///Provider initialization
+    final googleAuthProvider = context.read<GoogleAuthProvider>();
+
     return Scaffold(
-      appBar: AppBar(title: Text("Home")),
+      appBar: AppBar(
+        title: Text("Home"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              googleAuthProvider.logOut();
+            },
+            icon: Icon(AppIcons.cupertinoLogOut),
+          )
+        ],
+      ),
       body: Column(
         children: [
-          // Icons row
+          // PageView (upar hoga)
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (i) => setState(() => _currentIndex = i),
+              children: [
+                Center(
+                  child: Text(
+                    "Messages page (tap message icon to open contacts)",
+                  ),
+                ), // 0
+                Center(child: Text("Calls page")),
+                Center(child: Text("Contacts page")),
+                Center(child: Text("Settings page")),
+              ],
+            ),
+          ),
+
+          // Icons row (neeche shift kiya)
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8),
             child: Row(
@@ -60,37 +96,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-
-          // PageView
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (i) => setState(() => _currentIndex = i),
-              children: [
-                Center(
-                  child: Text(
-                    "Messages page (tap message icon to open contacts)",
-                  ),
-                ), // 0
-                Center(child: Text("Calls page")),
-                Center(child: Text("Contacts page")),
-                Center(child: Text("Settings page")),
-              ],
-            ),
-          ),
         ],
       ),
-    );
-  }
-
-  // we'll define _showContactsBottomSheet() below
-  void _showContactsBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return FractionallySizedBox(heightFactor: 0.85, child: Container());
-      },
     );
   }
 }

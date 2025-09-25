@@ -12,6 +12,7 @@ class AppIcons {
   static const IconData materialAdd = Icons.add;
   static const IconData materialEmailIcon = Icons.email_outlined;
   static const IconData materialPersonIcon = Icons.person;
+  static const IconData materialLogOut = Icons.logout;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;
@@ -23,4 +24,5 @@ class AppIcons {
   static const IconData cupertinoAdd = CupertinoIcons.add;
   static const IconData cupertinoEmailIcon = Icons.email_outlined;
   static const IconData cupertinoPersonIcon = Icons.person;
+  static const IconData cupertinoLogOut = Icons.logout;
 }

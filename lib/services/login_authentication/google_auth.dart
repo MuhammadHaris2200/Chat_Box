@@ -45,7 +45,7 @@ class GoogleAuthService {
         credential,
       );
 
-      ///phir us k bd sirf us user ko nikal rhe ha jo current user ho
+      ///phir us k bd sirf us user k credentials le rhe ha jo current user ho
       final user = userCredential.user!;
 
       ///phir kaha k agr user k account already exist nhi ha tw google se

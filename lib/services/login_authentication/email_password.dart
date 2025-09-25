@@ -1,12 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../model/user_model.dart';
 
 class EmailPassword {
+  ///Firebase ki authentication k liye instance jis se current user, sign in, sign out etc mil skte ha
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  ///Firestore ka mtlb user k document ko read write krne ka access
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  ///Current user
   User? get currentUser => _auth.currentUser;
+
+  ///Google se sign in hone ka instance
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   ///Sign up with name email & password
   Future<User?> signUp({
@@ -90,6 +99,7 @@ class EmailPassword {
 
   ///Log out
   Future<void> logOut() async {
+    await _googleSignIn.signOut();
     await _auth.signOut();
   }
 

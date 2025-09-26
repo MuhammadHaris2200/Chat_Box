@@ -53,7 +53,7 @@ class GoogleAuthService {
       final doc = await _firestore.collection("users").doc(user.uid).get();
       if (!doc.exists) {
         await _firestore.collection("users").doc(user.uid).set({
-          "uid": user.uid ?? '',
+          "uid": user.uid,
           "name": user.displayName ?? '',
           "email": user.email ?? '',
           "about": "Hey there I am using ChatBox",

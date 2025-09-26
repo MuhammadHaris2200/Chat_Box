@@ -1,102 +1,160 @@
+import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/viewModel/provider/google_auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter/material.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomescreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomescreenState extends State<HomeScreen> {
+  ///Page controller jis se hum pages ko controll krte ha
   final PageController _pageController = PageController();
+
+  ///Current index
   int _currentIndex = 0;
 
-  void _onIconTap(int idx) {
-    setState(() => _currentIndex = idx);
+  ///ye vo func ha jb page view k icons click 
+  ///honge tw index ki value chage hoti rhegi
+  void _onIconTap(int index) {
+    setState(() => _currentIndex = index);
     _pageController.animateToPage(
-      idx,
-      duration: Duration(milliseconds: 300),
+      index,
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
   }
 
-  // call when message icon tapped
+  
+  ///Ye func message icon k liye ha qk jb message 
+  ///icon pe click hoga tw current user ko apne vo 
+  ///users show honge jin se chats ki ha us ne
+  ///or ye call jb hoga tw (_onIconTap) ki value 0 hojaegi
   void _onMessagesTap() {
     _onIconTap(0);
-   // _showContactsBottomSheet();
+
+    ///ye func press hone pe bottom sheet show hogi
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SizedBox(
+          height: double.infinity,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Contacts",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: const CircleAvatar(child: Icon(Icons.person)),
+                      title: Text("Contact $index"),
+                      onTap: () {
+                        // later: navigate to chat screen
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  ///dispose func takay textfield page 
+  ///se navigate hone k bd dipose hojae
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    ///Provider initialization
-    final googleAuthProvider = context.read<GoogleAuthProvider>();
-
     return Scaffold(
+      ///Text field in app bar
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Home"),
         centerTitle: true,
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              googleAuthProvider.logOut();
-            },
-            icon: Icon(AppIcons.cupertinoLogOut),
-          )
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Search users...",
+                prefixIcon: Icon(AppIcons.materialSearchIcon),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                filled: true,
+                fillColor: AppColors.greyColor,
+              ),
+            ),
+          ),
+        ),
+      ),
+
+      ///Page view in body jis ma kaha ha k jese 
+      ///hi page view change ho tw current index 
+      ///ki value i k equal krdo
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (i) => setState(() => _currentIndex = i),
+        children: const [
+          ///Page view k 4 pages
+          Center(child: Text("Messages Page")),
+          Center(child: Text("Calls Page")),
+          Center(child: Text("Contacts Page")),
+          Center(child: Text("Settings Page")),
         ],
       ),
-      body: Column(
-        children: [
-          // PageView (upar hoga)
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (i) => setState(() => _currentIndex = i),
-              children: [
-                Center(
-                  child: Text(
-                    "Messages page (tap message icon to open contacts)",
-                  ),
-                ), // 0
-                Center(child: Text("Calls page")),
-                Center(child: Text("Contacts page")),
-                Center(child: Text("Settings page")),
-              ],
-            ),
-          ),
 
-          // Icons row (neeche shift kiya)
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.message),
-                  color: _currentIndex == 0 ? Colors.blue : Colors.grey,
-                  onPressed: _onMessagesTap,
-                ),
-                IconButton(
-                  icon: Icon(Icons.call),
-                  color: _currentIndex == 1 ? Colors.blue : Colors.grey,
-                  onPressed: () => _onIconTap(1),
-                ),
-                IconButton(
-                  icon: Icon(Icons.contacts),
-                  color: _currentIndex == 2 ? Colors.blue : Colors.grey,
-                  onPressed: () => _onIconTap(2),
-                ),
-                IconButton(
-                  icon: Icon(Icons.settings),
-                  color: _currentIndex == 3 ? Colors.blue : Colors.grey,
-                  onPressed: () => _onIconTap(3),
-                ),
-              ],
-            ),
+      ///Bottom navigation bar     
+      bottomNavigationBar: BottomNavigationBar(
+        ///Current index ki value jo zero ha
+        currentIndex: _currentIndex,
+        ///or on tap pe kaha k agr index ki value 
+        ///zero ha tw (_onMessagesTap) func show 
+        ///kro varna (_onIconTap) func
+        onTap: (index) {
+          if (index == 0) {
+            _onMessagesTap();
+          } else {
+            _onIconTap(index);
+          }
+        },
+        selectedItemColor: AppColors.blueColor,
+        unselectedItemColor: AppColors.greyColor,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: "Messages"),
+          BottomNavigationBarItem(icon: Icon(Icons.call), label: "Calls"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.contacts),
+            label: "Contacts",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
           ),
         ],
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

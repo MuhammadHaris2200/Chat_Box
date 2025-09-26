@@ -1,9 +1,6 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
-import 'package:chat_box/viewModel/provider/google_auth_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:chat_box/contacts_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +17,7 @@ class _HomescreenState extends State<HomeScreen> {
   ///Current index
   int _currentIndex = 0;
 
-  ///ye vo func ha jb page view k icons click 
+  ///ye vo func ha jb page view k icons click
   ///honge tw index ki value chage hoti rhegi
   void _onIconTap(int index) {
     setState(() => _currentIndex = index);
@@ -31,9 +28,8 @@ class _HomescreenState extends State<HomeScreen> {
     );
   }
 
-  
-  ///Ye func message icon k liye ha qk jb message 
-  ///icon pe click hoga tw current user ko apne vo 
+  ///Ye func message icon k liye ha qk jb message
+  ///icon pe click hoga tw current user ko apne vo
   ///users show honge jin se chats ki ha us ne
   ///or ye call jb hoga tw (_onIconTap) ki value 0 hojaegi
   void _onMessagesTap() {
@@ -42,42 +38,17 @@ class _HomescreenState extends State<HomeScreen> {
     ///ye func press hone pe bottom sheet show hogi
     showModalBottomSheet(
       context: context,
-      builder: (_) {
-        return SizedBox(
-          height: double.infinity,
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  "Contacts",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Divider(),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: const CircleAvatar(child: Icon(Icons.person)),
-                      title: Text("Contact $index"),
-                      onTap: () {
-                        // later: navigate to chat screen
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+      isScrollControlled: true, // poora height le sake
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) =>
+          ContactsBottomSheet(), // 👈 yahan ab direct class use hogi
     );
   }
 
   @override
-  ///dispose func takay textfield page 
+  ///dispose func takay textfield page
   ///se navigate hone k bd dipose hojae
   void dispose() {
     _pageController.dispose();
@@ -111,8 +82,8 @@ class _HomescreenState extends State<HomeScreen> {
         ),
       ),
 
-      ///Page view in body jis ma kaha ha k jese 
-      ///hi page view change ho tw current index 
+      ///Page view in body jis ma kaha ha k jese
+      ///hi page view change ho tw current index
       ///ki value i k equal krdo
       body: PageView(
         controller: _pageController,
@@ -126,18 +97,27 @@ class _HomescreenState extends State<HomeScreen> {
         ],
       ),
 
-      ///Bottom navigation bar     
+      ///Bottom navigation bar
       bottomNavigationBar: BottomNavigationBar(
         ///Current index ki value jo zero ha
         currentIndex: _currentIndex,
-        ///or on tap pe kaha k agr index ki value 
-        ///zero ha tw (_onMessagesTap) func show 
+
+        ///or on tap pe kaha k agr index ki value
+        ///zero ha tw (_onMessagesTap) func show
         ///kro varna (_onIconTap) func
         onTap: (index) {
           if (index == 0) {
             _onMessagesTap();
           } else {
             _onIconTap(index);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return HomeScreen();
+                },
+              ),
+            );
           }
         },
         selectedItemColor: AppColors.blueColor,

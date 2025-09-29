@@ -38,12 +38,11 @@ class _HomescreenState extends State<HomeScreen> {
     ///ye func press hone pe bottom sheet show hogi
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // poora height le sake
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) =>
-          ContactsBottomSheet(), // 👈 yahan ab direct class use hogi
+      builder: (_) => ContactsBottomSheet(),
     );
   }
 

@@ -45,4 +45,13 @@ class ChatService {
       "lastMessageTime": FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
+
+
+
+
+
+
+
+
+  
 }

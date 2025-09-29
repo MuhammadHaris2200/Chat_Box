@@ -18,7 +18,7 @@ class ChatService {
     ///agr chats ka document nh bana ha tw usko create krega
     if (!snap.exists) {
       ref.set({
-        "participant": [uidA, uidB],
+        "participants": [uidA, uidB],
         "createdAt": FieldValue.serverTimestamp(),
         "lastMessage": "",
         "lastMessageTime": null,
@@ -28,11 +28,11 @@ class ChatService {
 
   ///do users aik dosre ko message send is func ki help se kr skhenge
   ///messages collection ma particular cheezo k sath store honge
-  Future<void> sendMessage(String senderId, String chatId, String text) async {
+  static Future<void> sendMessage(String senderId, String chatId, String text) async {
     await FirebaseFirestore.instance
         .collection("chats")
         .doc(chatId)
-        .collection("messgaes")
+        .collection("messages")
         .add({
           "senderId": senderId,
           "text": text,

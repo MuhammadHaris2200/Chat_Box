@@ -1,3 +1,4 @@
+import 'package:chat_box/chat_screen.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
 import 'package:chat_box/services/my_service/profile_service.dart';
@@ -43,6 +44,6 @@ class MyApp extends StatelessWidget {
       title: "Chat Box",
       initialRoute: AppRoutes.home,
       routes: AppPages.getRoutes(),
-    );
+     );
   }
 }

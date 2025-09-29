@@ -1,24 +1,29 @@
+import 'package:chat_box/chat_screen.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/contacts_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomescreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomescreenState extends State<HomeScreen> {
-  ///Page controller jis se hum pages ko controll krte ha
+class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
-
-  ///Current index
   int _currentIndex = 0;
 
-  ///ye vo func ha jb page view k icons click
-  ///honge tw index ki value chage hoti rhegi
+  final TextEditingController _searchController = TextEditingController();
+  String searchQuery = "";
+
+  String get currentUserId => FirebaseAuth.instance.currentUser!.uid;
+
   void _onIconTap(int index) {
     setState(() => _currentIndex = index);
     _pageController.animateToPage(
@@ -28,99 +33,180 @@ class _HomescreenState extends State<HomeScreen> {
     );
   }
 
-  ///Ye func message icon k liye ha qk jb message
-  ///icon pe click hoga tw current user ko apne vo
-  ///users show honge jin se chats ki ha us ne
-  ///or ye call jb hoga tw (_onIconTap) ki value 0 hojaegi
+  /// BottomSheet → sirf latest chats
   void _onMessagesTap() {
-    _onIconTap(0);
+  _onIconTap(0);
 
-    ///ye func press hone pe bottom sheet show hogi
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => ContactsBottomSheet(),
-    );
-  }
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // drag handle
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const Text(
+              "Your Chats",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+
+            // Chats list
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("chats")
+                    .where("participants", arrayContains: currentUserId)
+                    .orderBy("lastMessageTime", descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text("No chats found"));
+                  }
+
+                  final chats = snapshot.data!.docs;
+
+                  return ListView.builder(
+                    itemCount: chats.length,
+                    itemBuilder: (context, index) {
+                      final chat = chats[index];
+                      final participants =
+                          List<String>.from(chat['participants']);
+                      final otherUserId = participants
+                          .firstWhere((id) => id != currentUserId);
+
+                      return FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection("users")
+                            .doc(otherUserId)
+                            .get(),
+                        builder: (context, userSnap) {
+                          if (!userSnap.hasData) return const SizedBox();
+                          final userData =
+                              userSnap.data!.data() as Map<String, dynamic>;
+
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: userData['photoUrl'] != null
+                                  ? NetworkImage(userData['photoUrl'])
+                                  : null,
+                              child: userData['photoUrl'] == null
+                                  ? Icon(Icons.person, color: Colors.blue)
+                                  : null,
+                            ),
+                            title: Text(userData['name'] ?? "Unknown"),
+                            subtitle: Text(chat['lastMessage'] ?? ""),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ChatScreen(
+                                    peerId: otherUserId,
+                                    peerName: userData['name'],
+                                    peerPhoto: userData['photoUrl'],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 
   @override
-  ///dispose func takay textfield page
-  ///se navigate hone k bd dipose hojae
   void dispose() {
     _pageController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      ///Text field in app bar
       appBar: AppBar(
         title: const Text("Home"),
         centerTitle: true,
         automaticallyImplyLeading: false,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(60),
+          preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: _searchController,
+              onChanged: (val) {
+                setState(() {
+                  searchQuery = val.trim();
+                });
+              },
               decoration: InputDecoration(
                 hintText: "Search users...",
-                prefixIcon: Icon(AppIcons.materialSearchIcon),
+                prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 filled: true,
-                fillColor: AppColors.greyColor,
+                fillColor: Colors.grey[200],
               ),
             ),
           ),
         ),
       ),
 
-      ///Page view in body jis ma kaha ha k jese
-      ///hi page view change ho tw current index
-      ///ki value i k equal krdo
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (i) => setState(() => _currentIndex = i),
-        children: const [
-          ///Page view k 4 pages
-          Center(child: Text("Messages Page")),
-          Center(child: Text("Calls Page")),
-          Center(child: Text("Contacts Page")),
-          Center(child: Text("Settings Page")),
-        ],
-      ),
+      body: searchQuery.isEmpty
+          ? PageView(
+              controller: _pageController,
+              onPageChanged: (i) => setState(() => _currentIndex = i),
+              children: const [
+                Center(child: Text("Messages Page")),
+                Center(child: Text("Calls Page")),
+                Center(child: Text("Contacts Page")),
+                Center(child: Text("Settings Page")),
+              ],
+            )
+          : _buildSearchResults(),
 
-      ///Bottom navigation bar
       bottomNavigationBar: BottomNavigationBar(
-        ///Current index ki value jo zero ha
         currentIndex: _currentIndex,
-
-        ///or on tap pe kaha k agr index ki value
-        ///zero ha tw (_onMessagesTap) func show
-        ///kro varna (_onIconTap) func
         onTap: (index) {
           if (index == 0) {
             _onMessagesTap();
           } else {
             _onIconTap(index);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return HomeScreen();
-                },
-              ),
-            );
           }
         },
-        selectedItemColor: AppColors.blueColor,
-        unselectedItemColor: AppColors.greyColor,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.message), label: "Messages"),
           BottomNavigationBarItem(icon: Icon(Icons.call), label: "Calls"),
@@ -135,6 +221,46 @@ class _HomescreenState extends State<HomeScreen> {
         ],
         type: BottomNavigationBarType.fixed,
       ),
+    );
+  }
+
+  /// Search bar ke liye results
+  Widget _buildSearchResults() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection("users").snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text("No users found"));
+        }
+
+        final users = snapshot.data!.docs.where((doc) {
+          final name = (doc['name'] ?? "").toString().toLowerCase();
+          return name.contains(searchQuery.toLowerCase()) &&
+              doc.id != currentUserId;
+        }).toList();
+
+        if (users.isEmpty) {
+          return const Center(child: Text("No users found"));
+        }
+
+        return ListView.builder(
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final user = users[index];
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.green[100],
+                child: Icon(Icons.person, color: Colors.green),
+              ),
+              title: Text(user['name']),
+              onTap: () {},
+            );
+          },
+        );
+      },
     );
   }
 }

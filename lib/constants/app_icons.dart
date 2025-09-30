@@ -13,6 +13,9 @@ class AppIcons {
   static const IconData materialEmailIcon = Icons.email_outlined;
   static const IconData materialPersonIcon = Icons.person;
   static const IconData materialLogOut = Icons.logout;
+  static const IconData materialEmoji = Icons.emoji_emotions_outlined;
+  static const IconData materialAttach = Icons.attach_file;
+  static const IconData materialSend = Icons.send;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;
@@ -25,4 +28,7 @@ class AppIcons {
   static const IconData cupertinoEmailIcon = Icons.email_outlined;
   static const IconData cupertinoPersonIcon = Icons.person;
   static const IconData cupertinoLogOut = Icons.logout;
+  static const IconData cupertinoEmoji = Icons.emoji_emotions_outlined;
+  static const IconData cupertinoAttach = Icons.attach_file;
+  static const IconData cupertinoSend = Icons.send;
 }

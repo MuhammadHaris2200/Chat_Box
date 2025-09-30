@@ -2,6 +2,7 @@ import 'package:chat_box/chat_screen.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/contacts_bottom_sheet.dart';
+import 'package:chat_box/services/my_service/chat_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
@@ -338,13 +339,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       .orderBy("lastMessageTime", descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator());
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
                     }
-                    if (!snapshot.hasData ||
-                        snapshot.data!.docs.isEmpty) {
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return const Center(child: Text("No chats found"));
                     }
 
@@ -354,10 +352,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemCount: chats.length,
                       itemBuilder: (context, index) {
                         final chat = chats[index];
-                        final participants =
-                        List<String>.from(chat['participants']);
-                        final otherUserId = participants
-                            .firstWhere((id) => id != currentUserId);
+                        final participants = List<String>.from(
+                          chat['participants'],
+                        );
+                        final otherUserId = participants.firstWhere(
+                          (id) => id != currentUserId,
+                        );
 
                         return FutureBuilder<DocumentSnapshot>(
                           future: FirebaseFirestore.instance
@@ -366,18 +366,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               .get(),
                           builder: (context, userSnap) {
                             if (!userSnap.hasData) return const SizedBox();
-                            final userData = userSnap.data!.data()
-                            as Map<String, dynamic>;
+                            final userData =
+                                userSnap.data!.data() as Map<String, dynamic>;
 
                             return ListTile(
                               leading: CircleAvatar(
-                                backgroundImage:
-                                userData['photoUrl'] != null
+                                backgroundImage: userData['photoUrl'] != null
                                     ? NetworkImage(userData['photoUrl'])
                                     : null,
                                 child: userData['photoUrl'] == null
-                                    ? const Icon(Icons.person,
-                                    color: Colors.blue)
+                                    ? const Icon(
+                                        Icons.person,
+                                        color: Colors.blue,
+                                      )
                                     : null,
                               ),
                               title: Text(userData['name'] ?? "Unknown"),
@@ -386,7 +387,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => ChatScreen(currentUserId: currentUserId, otherUserId: otherUserId)
+                                    builder: (_) => ChatScreen(
+                                      currentUserId: currentUserId,
+                                      otherUserId: otherUserId,
+                                    ),
                                   ),
                                 );
                               },
@@ -446,15 +450,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
       body: searchQuery.isEmpty
           ? PageView(
-        controller: _pageController,
-        onPageChanged: (i) => setState(() => _currentIndex = i),
-        children: const [
-          Center(child: Text("Messages Page")),
-          Center(child: Text("Calls Page")),
-          Center(child: Text("Contacts Page")),
-          Center(child: Text("Settings Page")),
-        ],
-      )
+              controller: _pageController,
+              onPageChanged: (i) => setState(() => _currentIndex = i),
+              children: const [
+                Center(child: Text("Messages Page")),
+                Center(child: Text("Calls Page")),
+                Center(child: Text("Contacts Page")),
+                Center(child: Text("Settings Page")),
+              ],
+            )
           : _buildSearchResults(),
 
       bottomNavigationBar: BottomNavigationBar(
@@ -469,8 +473,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.message), label: "Messages"),
+          BottomNavigationBarItem(icon: Icon(Icons.message), label: "Messages"),
           BottomNavigationBarItem(icon: Icon(Icons.call), label: "Calls"),
           BottomNavigationBarItem(
             icon: Icon(Icons.contacts),
@@ -518,13 +521,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(Icons.person, color: Colors.green),
               ),
               title: Text(user['name']),
+              subtitle: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("chats")
+                    .doc(ChatService.chatId(currentUserId, user.id))
+                    .collection("messages")
+                    .orderBy("timestamp", descending: true) // latest first
+                    .limit(1) // sirf last 1 message
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Text("No messages yet");
+                  }
+                  final lastMessage = snapshot.data!.docs.first;
+                  return Text(
+                    lastMessage['text'], // 👈 last chat text
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.grey),
+                  );
+                },
+              ),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChatScreen(
                       currentUserId: currentUserId,
-                      otherUserId: user.id, // ✅ pass kar diya
+                      otherUserId: user.id,
                     ),
                   ),
                 );
@@ -536,5 +560,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-

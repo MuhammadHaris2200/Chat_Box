@@ -24,10 +24,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => SignupProvider(authService)),
         ChangeNotifierProvider(create: (create) => SignInProvider(authService)),
-        ChangeNotifierProvider(create: (context) => ForgotProvider(authService)),
-        ChangeNotifierProvider(create: (context) => ProfileProvider(profileService)),
-        ChangeNotifierProvider(create: (context) => GoogleAuthProvider())
-        
+        ChangeNotifierProvider(
+          create: (context) => ForgotProvider(authService),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileProvider(profileService),
+        ),
+        ChangeNotifierProvider(create: (context) => GoogleAuthProvider()),
       ],
       child: MyApp(),
     ),
@@ -42,8 +45,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.splash,
       routes: AppPages.getRoutes(),
-     );
+    );
   }
 }

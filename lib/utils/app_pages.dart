@@ -18,7 +18,7 @@ class AppPages {
       AppRoutes.signUp: (context) => const Signup(),
       AppRoutes.home: (context) => const HomeScreen(),
       AppRoutes.forgot: (context) => const ForgotPassword(),
-      AppRoutes.profile: (context) => const ProfileScreen()
+      AppRoutes.profile: (context) => const ProfileScreen(),
     };
   }
 }

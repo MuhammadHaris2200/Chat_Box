@@ -1,4 +1,4 @@
-class AppRoutes{
+class AppRoutes {
   static const String splash = "/splash";
   static const String onBoarding = "/onBoarding";
   static const String login = "/login";
@@ -11,5 +11,5 @@ class AppRoutes{
   static const String groupCall = "/groupVideoCall";
   static const String profile = "/profile";
   static const String forgot = "/forgot";
-
+  static const String chatScreen = "/chatScreen";
 }

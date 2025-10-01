@@ -61,7 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Chat Screen"), centerTitle: true),
       body: Container(
-        color: Colors.black,
+        color: AppColors.blackColor,
         child: Column(
           children: [
             /// Messages list
@@ -84,57 +84,70 @@ class _ChatScreenState extends State<ChatScreen> {
                   ///yaha sara snapshot ka data messages variable ma store krdiya
                   final messages = snapshot.data!.docs;
 
-                  return ListView.builder(
-                    reverse: true,
-
-                    ///niche se scroll start
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = messages[index];
-
-                      ///agay condition check krne k liye likha ha
-                      final isMe = msg["senderId"] == widget.currentUserId;
-
-                      ///agr current user ne message kiya ha tw right pe else left pe
-                      return Align(
-                        alignment: isMe
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-
-                        ///ye container jis ma messages show hone
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: mq.width * .02,
-                            vertical: mq.height * .005,
-                          ),
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            ///container ka color agr current user ne
-                            ///msg kiya ha tw blue color else light gre
-                            color: isMe
-                                ? AppColors.blueColor
-                                : AppColors.lightGrey,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                  ///agr messages list empty ha tw ye text show kro center ma
+                  return messages.isEmpty
+                      ? Center(
                           child: Text(
-                            ///yaha container k andr text ka color agr current user
-                            ///ne text kiya ha tw white color else black color
-                            msg["text"],
+                            "Say Hi 👋 to start the conversation",
                             style: TextStyle(
                               fontSize: mq.height * .02,
-                              color: isMe
-                                  ? AppColors.whiteColor
-                                  : AppColors.blackColor,
+                              color: AppColors.white70,
+                              fontStyle: FontStyle.italic,
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
+                        )
+                      ///else listview builder ma
+                      : ListView.builder(
+                          reverse: true,
+
+                          ///niche se scroll start
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            final msg = messages[index];
+
+                            ///agay condition check krne k liye likha ha
+                            final isMe =
+                                msg["senderId"] == widget.currentUserId;
+
+                            ///agr current user ne message kiya ha tw right pe else left pe
+                            return Align(
+                              alignment: isMe
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+
+                              ///ye container jis ma messages show hone
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: mq.width * .02,
+                                  vertical: mq.height * .005,
+                                ),
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  ///container ka color agr current user ne
+                                  ///msg kiya ha tw blue color else light gre
+                                  color: isMe
+                                      ? AppColors.blueColor
+                                      : AppColors.lightGrey,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Text(
+                                  ///yaha container k andr text ka color agr current user
+                                  ///ne text kiya ha tw white color else black color
+                                  msg["text"],
+                                  style: TextStyle(
+                                    fontSize: mq.height * .02,
+                                    color: isMe
+                                        ? AppColors.whiteColor
+                                        : AppColors.blackColor,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
                 },
               ),
             ),
-
 
             ///Text field
             Padding(
@@ -155,7 +168,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
+                            //color: AppColors.greyColor,
                             blurRadius: 5,
                             offset: const Offset(0, 3),
                           ),
@@ -170,16 +183,20 @@ class _ChatScreenState extends State<ChatScreen> {
                               color: AppColors.greyColor,
                             ),
                           ),
-                           SizedBox(width: mq.width * .01),
+                          SizedBox(width: mq.width * .01),
 
                           /// TextField
-                          Expanded(
-                            child: TextField(
-                              controller: _messageController,
-                              textCapitalization: TextCapitalization.sentences,
-                              decoration: InputDecoration(
-                                hintText: "Type a message...",
-                                border: InputBorder.none,
+                          Padding(
+                            padding: EdgeInsets.only(bottom: mq.height * .05),
+                            child: Expanded(
+                              child: TextField(
+                                controller: _messageController,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                decoration: InputDecoration(
+                                  hintText: "Type a message...",
+                                  border: InputBorder.none,
+                                ),
                               ),
                             ),
                           ),
@@ -196,7 +213,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
 
-                   SizedBox(width: mq.width * .02),
+                  SizedBox(width: mq.width * .02),
 
                   /// Send button
                   CircleAvatar(

@@ -3,6 +3,7 @@ import 'package:chat_box/constants/app_images.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/viewModel/provider/google_auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
 import '../viewModel/provider/signIn_provider.dart';
@@ -87,11 +88,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         try {
                           await googleAuthProvider.signInWithGoogle();
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Signed in successfully"),
-                            behavior: SnackBarBehavior.floating,
-                            margin: EdgeInsets.all(16),
-                            shape: StadiumBorder(),
-                            backgroundColor: AppColors.blueColor,),
+                            SnackBar(
+                              content: Text("Signed in successfully"),
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.all(16),
+                              shape: StadiumBorder(),
+                              backgroundColor: AppColors.blueColor,
+                            ),
                           );
                           Navigator.pushReplacementNamed(
                             context,
@@ -253,9 +256,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushReplacementNamed(context, AppRoutes.home);
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                    Fluttertoast.showToast(
+                      msg: "msg",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: AppColors.redColor,
+                      textColor: AppColors.whiteColor,
+                      fontSize: 16,
+                    );
                   }
                 },
                 child: Container(

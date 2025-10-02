@@ -1,6 +1,8 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/services/my_service/chat_service.dart';
+import 'package:chat_box/widgets/message_bubble.dart';
+import 'package:chat_box/widgets/message_input.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Chat Screen"), centerTitle: true),
       body: Container(
-        color: AppColors.blackColor,
+        color: AppColors.lightGrey,
         child: Column(
           children: [
             /// Messages list
@@ -76,9 +78,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     ///recent msg top pe
                     .snapshots(),
                 builder: (context, snapshot) {
-                  ///agr data nh ha tw indicator show krdo
+                  ///agr data nh ha tw sized box show krdo
                   if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: SizedBox());
                   }
 
                   ///yaha sara snapshot ka data messages variable ma store krdiya
@@ -98,50 +100,22 @@ class _ChatScreenState extends State<ChatScreen> {
                         )
                       ///else listview builder ma
                       : ListView.builder(
+                          ///niche se scroll start
                           reverse: true,
 
-                          ///niche se scroll start
+                          ///messages list ki length
                           itemCount: messages.length,
+
+                          ///list view ka builder jis ki help se do users ki
+                          ///chats build hone k bd screen pe show hoti ha
                           itemBuilder: (context, index) {
                             final msg = messages[index];
 
-                            ///agay condition check krne k liye likha ha
-                            final isMe =
-                                msg["senderId"] == widget.currentUserId;
-
-                            ///agr current user ne message kiya ha tw right pe else left pe
-                            return Align(
-                              alignment: isMe
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-
-                              ///ye container jis ma messages show hone
-                              child: Container(
-                                margin: EdgeInsets.symmetric(
-                                  horizontal: mq.width * .02,
-                                  vertical: mq.height * .005,
-                                ),
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                  ///container ka color agr current user ne
-                                  ///msg kiya ha tw blue color else light gre
-                                  color: isMe
-                                      ? AppColors.blueColor
-                                      : AppColors.lightGrey,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Text(
-                                  ///yaha container k andr text ka color agr current user
-                                  ///ne text kiya ha tw white color else black color
-                                  msg["text"],
-                                  style: TextStyle(
-                                    fontSize: mq.height * .02,
-                                    color: isMe
-                                        ? AppColors.whiteColor
-                                        : AppColors.blackColor,
-                                  ),
-                                ),
-                              ),
+                            ///custom message bubble widget jis ma
+                            ///do users ki chats show hongi ui pe
+                            return MessageBubble(
+                              text: msg['text'],
+                              isMe: msg['senderId'] == widget.currentUserId,
                             );
                           },
                         );
@@ -149,88 +123,8 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
 
-            ///Text field
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: mq.width * .02,
-                vertical: mq.height * .05,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: mq.width * .02,
-                        vertical: mq.width * .01,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            //color: AppColors.greyColor,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              AppIcons.cupertinoEmoji,
-                              color: AppColors.greyColor,
-                            ),
-                          ),
-                          SizedBox(width: mq.width * .01),
-
-                          /// TextField
-                          Padding(
-                            padding: EdgeInsets.only(bottom: mq.height * .05),
-                            child: Expanded(
-                              child: TextField(
-                                controller: _messageController,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
-                                decoration: InputDecoration(
-                                  hintText: "Type a message...",
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              AppIcons.cupertinoAttach,
-                              color: AppColors.greyColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(width: mq.width * .02),
-
-                  /// Send button
-                  CircleAvatar(
-                    radius: mq.height * .028,
-                    backgroundColor: AppColors.greyColor,
-                    child: IconButton(
-                      icon: Icon(
-                        size: mq.height * .03,
-                        AppIcons.cupertinoSend,
-                        color: AppColors.blackColor,
-                      ),
-                      onPressed: _sendMessage,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            ///custom message send widget jo bottom ma show hota ha
+            MessageInput(controller: _messageController, onSend: _sendMessage),
           ],
         ),
       ),

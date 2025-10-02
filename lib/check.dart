@@ -1,15 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatService {
+class ChatProvider with ChangeNotifier {
   /// Ye func aik unique chat id banata ha do users k b/w
-  static String chatId(String a, String b) =>
+  String chatId(String a, String b) =>
       a.compareTo(b) > 0 ? "${b}_$a" : "${a}_$b";
 
   /// Ye func chats create krega do users k b/w
-  static Future<void> createChatIfNotExist(
+  Future<void> createChatIfNotExist(
     String chatId,
     String uidA,
     String uidB,
@@ -17,19 +15,16 @@ class ChatService {
     final ref = FirebaseFirestore.instance.collection("chats").doc(chatId);
     final snap = await ref.get();
 
-    /// agr chats ka document nh bana ha tw usko create krega
     if (!snap.exists) {
       await ref.set({
         "participants": [uidA, uidB],
         "createdAt": FieldValue.serverTimestamp(),
-        ///"lastMessage": "",
-        /// "lastMessageTime": FieldValue.serverTimestamp(),
       });
     }
   }
 
   /// do users aik dosre ko message send is func ki help se kr skhenge
-  static Future<void> sendMessage(
+  Future<void> sendMessage(
     String senderId,
     String chatId,
     String text,
@@ -45,10 +40,11 @@ class ChatService {
           "read": false,
         });
 
-    /// chats ka last message update hoga
     await FirebaseFirestore.instance.collection("chats").doc(chatId).set({
       "lastMessage": text,
       "lastMessageTime": FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+
+    notifyListeners(); // UI ko update karne ke liye
   }
 }

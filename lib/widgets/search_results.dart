@@ -1,8 +1,9 @@
-import 'package:chat_box/chat_screen.dart';
+import 'package:chat_box/view/chat_screen.dart';
 import 'package:chat_box/services/my_service/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+///custom widget
 class SearchResultsList extends StatelessWidget {
   final String searchQuery;
   final String currentUserId;

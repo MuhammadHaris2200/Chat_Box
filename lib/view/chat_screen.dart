@@ -1,10 +1,11 @@
+import 'package:chat_box/check.dart';
 import 'package:chat_box/constants/app_colors.dart';
-import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/services/my_service/chat_service.dart';
 import 'package:chat_box/widgets/message_bubble.dart';
 import 'package:chat_box/widgets/message_input.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   ///Current logged in user
@@ -35,11 +36,13 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+
     ///here we initialize unique id of two users
-    chatId = ChatService.chatId(widget.currentUserId, widget.otherUserId);
+    chatId = chatProvider.chatId(widget.currentUserId, widget.otherUserId);
 
     ///if chat doesn't exist, we create
-    ChatService.createChatIfNotExist(
+    chatProvider.createChatIfNotExist(
       chatId,
       widget.currentUserId,
       widget.otherUserId,
@@ -51,7 +54,9 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    ChatService.sendMessage(widget.currentUserId, chatId, text);
+    final chatProvider = context.read<ChatProvider>();
+
+    chatProvider.sendMessage(widget.currentUserId, chatId, text);
     _messageController.clear();
   }
 

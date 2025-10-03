@@ -1,4 +1,5 @@
-import 'package:chat_box/chat_screen.dart';
+import 'package:chat_box/check.dart';
+import 'package:chat_box/view/chat_screen.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
 import 'package:chat_box/services/my_service/profile_service.dart';
@@ -31,6 +32,7 @@ void main() async {
           create: (context) => ProfileProvider(profileService),
         ),
         ChangeNotifierProvider(create: (context) => GoogleAuthProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider())
       ],
       child: MyApp(),
     ),

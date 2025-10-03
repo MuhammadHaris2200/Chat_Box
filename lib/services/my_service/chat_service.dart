@@ -1,7 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatService {
   /// Ye func aik unique chat id banata ha do users k b/w

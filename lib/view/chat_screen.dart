@@ -1,4 +1,4 @@
-import 'package:chat_box/check.dart';
+import 'package:chat_box/viewModel/provider/chat_service_provider.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/services/my_service/chat_service.dart';
 import 'package:chat_box/widgets/message_bubble.dart';
@@ -36,7 +36,10 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatServiceProvider>(
+      context,
+      listen: false,
+    );
 
     ///here we initialize unique id of two users
     chatId = chatProvider.chatId(widget.currentUserId, widget.otherUserId);
@@ -54,7 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    final chatProvider = context.read<ChatProvider>();
+    final chatProvider = context.read<ChatServiceProvider>();
 
     chatProvider.sendMessage(widget.currentUserId, chatId, text);
     _messageController.clear();

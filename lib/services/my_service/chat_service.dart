@@ -19,6 +19,7 @@ class ChatService {
       await ref.set({
         "participants": [uidA, uidB],
         "createdAt": FieldValue.serverTimestamp(),
+
         ///"lastMessage": "",
         /// "lastMessageTime": FieldValue.serverTimestamp(),
       });

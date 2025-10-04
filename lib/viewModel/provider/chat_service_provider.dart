@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChatProvider with ChangeNotifier {
+class ChatServiceProvider with ChangeNotifier {
   /// Ye func aik unique chat id banata ha do users k b/w
   String chatId(String a, String b) =>
       a.compareTo(b) > 0 ? "${b}_$a" : "${a}_$b";
@@ -24,11 +24,7 @@ class ChatProvider with ChangeNotifier {
   }
 
   /// do users aik dosre ko message send is func ki help se kr skhenge
-  Future<void> sendMessage(
-    String senderId,
-    String chatId,
-    String text,
-  ) async {
+  Future<void> sendMessage(String senderId, String chatId, String text) async {
     await FirebaseFirestore.instance
         .collection("chats")
         .doc(chatId)

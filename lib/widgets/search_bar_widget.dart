@@ -17,20 +17,17 @@ class SearchBarWidget extends StatelessWidget {
     ///Media query intialization
     final mq = MediaQuery.of(context).size;
 
-    return Padding(
-      padding: EdgeInsets.all(mq.height * .01),
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        decoration: InputDecoration(
-          hintText: "Search users",
-          prefixIcon: Icon(AppIcons.materialSearchIcon),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(mq.height * .03),
-          ),
-          filled: true,
-          fillColor: AppColors.lightGrey,
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        hintText: "Search users",
+        prefixIcon: Icon(AppIcons.materialSearchIcon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(mq.height * .03),
         ),
+        filled: true,
+        fillColor: AppColors.lightGrey,
       ),
     );
   }

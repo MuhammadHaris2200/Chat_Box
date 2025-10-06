@@ -56,7 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// message bhejne ka func
   void _sendMessage() async {
-    final text = _messageController.text.trim();
+    final text = _messageController.text.trim();  
     if (text.isEmpty) return;
 
     final chatProvider = context.read<ChatServiceProvider>();
@@ -153,7 +153,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
 
-          /// 👇 ab body me opponentPic directly use kar sakte ho
+
           body: Container(
             color: AppColors.whiteColor,
             child: Column(
@@ -197,7 +197,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   isMe: isMe,
                                   opponentPic: opponentPic,
                                   opponentName:
-                                      opponentName, // ✅ ab ye available ha
+                                      opponentName,
                                 );
                               },
                             );

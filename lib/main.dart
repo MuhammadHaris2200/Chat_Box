@@ -1,3 +1,6 @@
+import 'package:chat_box/flutter.dart';
+import 'package:chat_box/login_page.dart';
+import 'package:chat_box/view/login.dart';
 import 'package:chat_box/viewModel/provider/chat_service_provider.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
@@ -46,8 +49,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.splash,
-      routes: AppPages.getRoutes(),
+      // initialRoute: AppRoutes.splash,
+      // routes: AppPages.getRoutes(),
+      home: Flutter(),
     );
   }
 }

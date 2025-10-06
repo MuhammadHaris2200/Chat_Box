@@ -41,6 +41,7 @@ class MessageInput extends StatelessWidget {
                   SizedBox(width: mq.width * .01),
                   Expanded(
                     child: TextField(
+                      maxLines: null,
                       controller: controller,
                       textCapitalization: TextCapitalization.sentences,
                       decoration: InputDecoration(

@@ -1,6 +1,8 @@
+import 'package:chat_box/constants/app_icons.dart';
+import 'package:chat_box/video_call.dart';
+import 'package:chat_box/voice_call.dart';
 import 'package:chat_box/viewModel/provider/chat_service_provider.dart';
 import 'package:chat_box/constants/app_colors.dart';
-import 'package:chat_box/services/my_service/chat_service.dart';
 import 'package:chat_box/widgets/message_bubble.dart';
 import 'package:chat_box/widgets/message_input.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,89 +55,164 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   /// message bhejne ka func
-  void _sendMessage() {
+  void _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
     final chatProvider = context.read<ChatServiceProvider>();
 
-    chatProvider.sendMessage(widget.currentUserId, chatId, text);
+    await chatProvider.sendMessage(widget.currentUserId, chatId, text);
     _messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    ///Media query initialization
     final mq = MediaQuery.of(context).size;
 
-    return Scaffold(
-      appBar: AppBar(title: Text("Chat Screen"), centerTitle: true),
-      body: Container(
-        color: AppColors.lightGrey,
-        child: Column(
-          children: [
-            /// Messages list
-            Expanded(
-              ///Stream builder firebase se real time messages access krta ha
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("chats")
-                    .doc(chatId)
-                    .collection("messages")
-                    .orderBy("timestamp", descending: true)
-                    ///recent msg top pe
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  ///agr data nh ha tw sized box show krdo
-                  if (!snapshot.hasData) {
-                    return const Center(child: SizedBox());
-                  }
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection("users")
+          .doc(widget.otherUserId)
+          .snapshots(),
+      builder: (context, userSnapshot) {
+        if (!userSnapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-                  ///yaha sara snapshot ka data messages variable ma store krdiya
-                  final messages = snapshot.data!.docs;
+        var user = userSnapshot.data!;
+        final opponentPic = user["profilePic"] ?? "";
+        final opponentName = user["name"] ?? "";
+        final opponentEmail = user["email"] ?? "";
 
-                  ///agr messages list empty ha tw ye text show kro center ma
-                  return messages.isEmpty
-                      ? Center(
-                          child: Text(
-                            "Say Hi 👋 to start the conversation",
-                            style: TextStyle(
-                              fontSize: mq.height * .02,
-                              color: AppColors.white70,
-                              fontStyle: FontStyle.italic,
-                            ),
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: AppColors.whiteColor,
+            title: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: AppColors.yellowColor,
+                  backgroundImage: opponentPic != ""
+                      ? NetworkImage(opponentPic)
+                      : null,
+                  child: opponentPic == ""
+                      ? Text(
+                          opponentName[0].toUpperCase(),
+                          style: TextStyle(
+                            fontSize: mq.height * .03,
+                            color: AppColors.blackColor,
                           ),
                         )
-                      ///else listview builder ma
-                      : ListView.builder(
-                          ///niche se scroll start
-                          reverse: true,
-
-                          ///messages list ki length
-                          itemCount: messages.length,
-
-                          ///list view ka builder jis ki help se do users ki
-                          ///chats build hone k bd screen pe show hoti ha
-                          itemBuilder: (context, index) {
-                            final msg = messages[index];
-
-                            ///custom message bubble widget jis ma
-                            ///do users ki chats show hongi ui pe
-                            return MessageBubble(
-                              text: msg['text'],
-                              isMe: msg['senderId'] == widget.currentUserId,
-                            );
-                          },
-                        );
-                },
-              ),
+                      : null,
+                ),
+                SizedBox(width: mq.width * .03),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      opponentName,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(opponentEmail, style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
+              ],
             ),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => VoiceCall()),
+                  );
+                },
+                icon: Icon(AppIcons.materialCallIcon, size: mq.height * .030),
+              ),
+              SizedBox(width: mq.width * .02),
+              Padding(
+                padding: EdgeInsets.only(right: mq.width * .08),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => VideoCall()),
+                    );
+                  },
+                  child: Icon(
+                    AppIcons.cupertinoVideoCall,
+                    size: mq.height * .037,
+                  ),
+                ),
+              ),
+            ],
+          ),
 
-            ///custom message send widget jo bottom ma show hota ha
-            MessageInput(controller: _messageController, onSend: _sendMessage),
-          ],
-        ),
-      ),
+          /// 👇 ab body me opponentPic directly use kar sakte ho
+          body: Container(
+            color: AppColors.whiteColor,
+            child: Column(
+              children: [
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("chats")
+                        .doc(chatId)
+                        .collection("messages")
+                        .orderBy("timestamp", descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: SizedBox());
+                      }
+
+                      final messages = snapshot.data!.docs;
+
+                      return messages.isEmpty
+                          ? Center(
+                              child: Text(
+                                "Say Hi 👋 to start the conversation",
+                                style: TextStyle(
+                                  fontSize: mq.height * .02,
+                                  color: AppColors.white70,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              reverse: true,
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) {
+                                final msg = messages[index];
+                                final isMe =
+                                    msg["senderId"] == widget.currentUserId;
+
+                                return MessageBubble(
+                                  text: msg['text'],
+                                  isMe: isMe,
+                                  opponentPic: opponentPic,
+                                  opponentName:
+                                      opponentName, // ✅ ab ye available ha
+                                );
+                              },
+                            );
+                    },
+                  ),
+                ),
+                MessageInput(
+                  controller: _messageController,
+                  onSend: _sendMessage,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

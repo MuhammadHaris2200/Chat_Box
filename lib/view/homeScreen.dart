@@ -1,10 +1,9 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
-import 'package:chat_box/services/my_service/chat_service.dart';
-import 'package:chat_box/view/chat_screen.dart';
-import 'package:chat_box/widgets/chats_bottom_sheet.dart';
+import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/services/login_authentication/email_password.dart';
+import 'package:chat_box/widgets/recent_chats.dart';
 import 'package:chat_box/widgets/search_results.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -20,9 +19,20 @@ class _HomeScreenState extends State<HomeScreen> {
   String searchQuery = '';
 
   ///Current user
-  String get currentUserId => FirebaseAuth.instance.currentUser!.uid;
+  String? get currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
   bool _isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
               right: mq.width * .04,
               top: mq.height * .01,
             ),
-            child: CircleAvatar(
-              radius: 24,
-              backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+            child: InkWell(
+              onTap: () async {
+                await EmailPassword().logOut();
+                // Navigator.
+              },
+              child: CircleAvatar(
+                radius: 24,
+                backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
+              ),
             ),
           ),
         ],
@@ -141,15 +157,18 @@ class _HomeScreenState extends State<HomeScreen> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: AppColors.whiteColor,
-                borderRadius: BorderRadius.circular(mq.height * .05),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(mq.height * .05),
+                  topRight: Radius.circular(mq.height * .05),
+                ),
               ),
 
               ///custom widgets of showing recent chats
               child: searchQuery.isEmpty
-                  ? RecentChats(currentUserId: currentUserId)
+                  ? RecentChats(currentUserId: currentUserId ?? '')
                   : SearchResultsList(
                       searchQuery: searchQuery,
-                      currentUserId: currentUserId,
+                      currentUserId: currentUserId ?? '',
                     ),
             ),
           ),

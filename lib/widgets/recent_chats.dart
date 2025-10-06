@@ -12,6 +12,9 @@ class RecentChats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ///Media query initialization
+    final mq = MediaQuery.of(context).size;
+
     final stream = FirebaseFirestore.instance
         .collection("chats")
         .where("participants", arrayContains: currentUserId)
@@ -52,7 +55,7 @@ class RecentChats extends StatelessWidget {
                     userSnapshot.data!.data() as Map<String, dynamic>;
 
                 return Padding(
-                  padding: EdgeInsets.all(30.0),
+                  padding: EdgeInsets.all(mq.height * .02),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundImage: userData['photoUrl'] != null

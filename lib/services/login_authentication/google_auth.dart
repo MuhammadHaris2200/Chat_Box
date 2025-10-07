@@ -68,7 +68,9 @@ class GoogleAuthService {
 
       ///or kisi bhi error ki surat ma excpetion throw krdo
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
+      throw Exception("Google sign in failed: $e");
+    } catch (e) {
+      throw Exception("Something went wrrong: $e");
     }
   }
 }

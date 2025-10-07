@@ -16,6 +16,11 @@ class AppIcons {
   static const IconData materialEmoji = Icons.emoji_emotions_outlined;
   static const IconData materialAttach = Icons.attach_file;
   static const IconData materialSend = Icons.send;
+  static const IconData materialLock = Icons.lock;
+  static const IconData materialVisibility = Icons.visibility;
+  static const IconData materialVisibilityOff = Icons.visibility_off;
+  static const IconData materialGoogle = Icons.g_mobiledata;
+  static const IconData materialChatBubble = Icons.chat_bubble_rounded;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;
@@ -31,4 +36,5 @@ class AppIcons {
   static const IconData cupertinoEmoji = Icons.emoji_emotions_outlined;
   static const IconData cupertinoAttach = Icons.attach_file;
   static const IconData cupertinoSend = Icons.send;
+  static const IconData cupertinolLock = Icons.lock;
 }

@@ -29,8 +29,8 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   void dispose() {
-    super.dispose();
     _animationController.dispose();
+    super.dispose();
   }
 
   void _onLogin() {
@@ -39,14 +39,6 @@ class _LoginPageState extends State<LoginPage>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Welcome, $email")));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) {
-            return HomePlaceholder();
-          },
-        ),
-      );
     }
   }
 
@@ -274,6 +266,59 @@ class _LoginPageState extends State<LoginPage>
                                   ),
                                 ),
                               ),
+
+                              SizedBox(height: 12),
+
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Divider(color: Colors.white30),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                    ),
+                                    child: Text(
+                                      "OR",
+                                      style: TextStyle(color: Colors.white54),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Divider(color: Colors.white30),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 12),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _SocialIcons(
+                                    icon: Icons.g_mobiledata,
+                                    onTap: () {},
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(height: 8),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "No account?",
+                                    style: TextStyle(color: Colors.white70),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      "Sign up",
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -352,4 +397,27 @@ InputDecoration _inputDecoration({
       borderSide: BorderSide(color: Colors.white24),
     ),
   );
+}
+
+class _SocialIcons extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _SocialIcons({super.key, required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(0.08),
+          border: Border.all(color: Colors.white12),
+        ),
+        child: Icon(icon, color: Colors.white, size: 40),
+      ),
+    );
+  }
 }

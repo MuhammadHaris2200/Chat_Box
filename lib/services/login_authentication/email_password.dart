@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -93,6 +95,7 @@ class EmailPassword {
         throw Exception("User not found");
       }
     } on FirebaseAuthException catch (e) {
+      log("Error ${e. message}");
       throw Exception(e.message);
     }
   }

@@ -1,5 +1,12 @@
 import 'dart:ui';
+import 'package:chat_box/constants/app_colors.dart';
+import 'package:chat_box/constants/app_icons.dart';
+import 'package:chat_box/constants/app_routes.dart';
+import 'package:chat_box/viewModel/provider/google_auth_provider.dart';
+import 'package:chat_box/viewModel/provider/signIn_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class Flutter extends StatefulWidget {
   const Flutter({super.key});
@@ -13,6 +20,9 @@ class _LoginScreenState extends State<Flutter>
   String email = '', password = '';
   bool obscure = true;
   late AnimationController _aniController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -21,25 +31,40 @@ class _LoginScreenState extends State<Flutter>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
   }
 
   @override
   void dispose() {
     _aniController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  void _onLogin() {
+  Future<void> _onLogin() async {
     if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();
-      // TODO: Firebase/Auth logic yahan add karo
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Welcome, $email')));
-      // Example nav to placeholder home:
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (_) => const HomePlaceholder()));
+      setState(() => _isLoading = true);
+
+      final signInProvider = context.read<SignInProvider>();
+      signInProvider.email = _emailController.text.trim();
+      signInProvider.password = _passwordController.text.trim();
+
+      try {
+        bool success = await signInProvider.signIn();
+        if (success && mounted) {
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+        }
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: e.toString(),
+          backgroundColor: AppColors.redColor,
+          textColor: AppColors.whiteColor,
+        );
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -57,9 +82,9 @@ class _LoginScreenState extends State<Flutter>
                 begin: Alignment(-0.8, -1),
                 end: Alignment(1, 0.8),
                 colors: [
-                  Color(0xFF2E1052),
-                  Color(0xFF6A3AA0),
-                  Color(0xFFFF7A7A),
+                  AppColors.purpleColor,
+                  AppColors.lightPurpleColor,
+                  AppColors.peachColor,
                 ],
                 stops: [0.0, 0.55, 1.0],
               ),
@@ -104,21 +129,21 @@ class _LoginScreenState extends State<Flutter>
                   // App icon + title
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      _AppLogo(),
-                      SizedBox(width: 12),
+                    children: [
+                      const _AppLogo(),
+                      SizedBox(width: size.width * .03),
                       Text(
                         'Chatify',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
+                          color: AppColors.whiteColor,
+                          fontSize: size.height * .034,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.6,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: size.height * .03),
 
                   // Glass card
                   ClipRRect(
@@ -127,16 +152,13 @@ class _LoginScreenState extends State<Flutter>
                       filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.all(20),
+                        padding: EdgeInsets.all(size.height * .02),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.12),
-                          ),
+                          border: Border.all(color: AppColors.white12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.25),
+                              color: AppColors.black26,
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -147,64 +169,81 @@ class _LoginScreenState extends State<Flutter>
                           child: Column(
                             children: [
                               // avatar
-                              const CircleAvatar(
-                                radius: 36,
+                              CircleAvatar(
+                                radius: size.height * .040,
                                 backgroundImage: NetworkImage(
                                   'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto='
                                   'format&fit=crop&ixlib=rb-4.0.3&s=7c3a2f14a0b3b2b1a3f2a2d1b3c2a1f9',
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                              const Text(
+                              SizedBox(height: size.height * .012),
+                              Text(
                                 'Welcome Back',
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
+                                  color: AppColors.whiteColor,
+                                  fontSize: size.height * .023,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 18),
+                              SizedBox(height: size.height * .019),
 
                               // Email
                               TextFormField(
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: AppColors.whiteColor),
                                 decoration: _inputDecoration(
                                   hint: 'Email...',
-                                  icon: Icons.person,
+                                  icon: AppIcons.cupertinoPersonIcon,
                                 ),
                                 keyboardType: TextInputType.emailAddress,
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                    ? 'Email is required'
-                                    : null,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return "Email is required";
+                                  }
+                                  if (!RegExp(
+                                    r'^[^@]+@[^@]+\.[^@]+',
+                                  ).hasMatch(value)) {
+                                    return "Enter a valid email";
+                                  }
+                                  return null;
+                                },
                                 onSaved: (v) => email = v?.trim() ?? '',
                               ),
-                              const SizedBox(height: 12),
+
+                              SizedBox(height: size.height * .012),
 
                               // Password
                               TextFormField(
-                                style: const TextStyle(color: Colors.white),
+                                style: const TextStyle(
+                                  color: AppColors.whiteColor,
+                                ),
                                 obscureText: obscure,
                                 decoration: _inputDecoration(
                                   hint: 'Password',
-                                  icon: Icons.lock,
+                                  icon: AppIcons.cupertinolLock,
                                   suffix: IconButton(
                                     onPressed: () =>
                                         setState(() => obscure = !obscure),
                                     icon: Icon(
                                       obscure
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: Colors.white70,
+                                          ? AppIcons.materialVisibilityOff
+                                          : AppIcons.materialVisibility,
+                                      color: AppColors.white70,
                                     ),
                                   ),
                                 ),
-                                validator: (v) => (v == null || v.length < 6)
-                                    ? 'Password must be atleast 6 characters'
-                                    : null,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Password is required";
+                                  }
+                                  if (value.length > 6) {
+                                    return "Password must be atleast 8 characters";
+                                  }
+                                  return null;
+                                },
                                 onSaved: (v) => password = v ?? '',
                               ),
-                              const SizedBox(height: 8),
+
+                              SizedBox(height: size.height * .01),
 
                               // forgot + remember row
                               Row(
@@ -215,15 +254,22 @@ class _LoginScreenState extends State<Flutter>
                                     ],
                                   ),
                                   TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.forgot,
+                                      );
+                                    },
                                     child: const Text(
                                       'Forgot?',
-                                      style: TextStyle(color: Colors.white70),
+                                      style: TextStyle(
+                                        color: AppColors.white70,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: size.height * .01),
 
                               // Gradient login button
                               SizedBox(
@@ -231,33 +277,33 @@ class _LoginScreenState extends State<Flutter>
                                 child: GestureDetector(
                                   onTap: _onLogin,
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 14,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: size.height * .014,
                                     ),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
                                       gradient: const LinearGradient(
                                         colors: [
-                                          Color(0xFF56CCF2),
-                                          Color(0xFF2F80ED),
+                                          // Color(0xFF56CCF2),
+                                          AppColors.lightBlue,
+                                          AppColors.blueColor,
                                         ],
                                         begin: Alignment.centerLeft,
                                         end: Alignment.centerRight,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.25),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 6),
+                                          blurRadius: 2,
+                                          offset: const Offset(0, 4),
                                         ),
                                       ],
                                     ),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
                                         'Login',
                                         style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
+                                          color: AppColors.whiteColor,
+                                          fontSize: size.height * .02,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -265,48 +311,75 @@ class _LoginScreenState extends State<Flutter>
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: size.height * .02),
 
                               // Or continue with
                               Row(
-                                children: const [
+                                children: [
                                   Expanded(
-                                    child: Divider(color: Colors.white24),
+                                    child: Divider(color: AppColors.white24),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: 8.0,
+                                      horizontal: size.width * .03,
                                     ),
                                     child: Text(
                                       'OR',
-                                      style: TextStyle(color: Colors.white54),
+                                      style: TextStyle(
+                                        color: AppColors.white54,
+                                      ),
                                     ),
                                   ),
                                   Expanded(
-                                    child: Divider(color: Colors.white24),
+                                    child: Divider(color: AppColors.white24),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: size.height * .015),
 
                               // Social row
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   _SocialIcon(
-                                    icon: Icons.facebook,
-                                    onTap: () {},
+                                    icon: AppIcons.materialGoogle,
+                                    isLoading: _isLoading,
+                                    onTap: _isLoading
+                                        ? null
+                                        : () async {
+                                            setState(() => _isLoading = true);
+                                            try {
+                                              final googleProvider = context
+                                                  .read<GoogleAuthProvider>();
+                                              await googleProvider
+                                                  .signInWithGoogle();
+                                              if (mounted) {
+                                                Navigator.pushReplacementNamed(
+                                                  context,
+                                                  AppRoutes.home,
+                                                );
+                                              }
+                                            } catch (e) {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    "Google Sign-In failed: $e",
+                                                backgroundColor:
+                                                    AppColors.redColor,
+                                                textColor: AppColors.whiteColor,
+                                              );
+                                            } finally {
+                                              if (mounted) {
+                                                setState(
+                                                  () => _isLoading = false,
+                                                );
+                                              }
+                                            }
+                                          },
                                   ),
-                                  const SizedBox(width: 12),
-                                  _SocialIcon(
-                                    icon: Icons.g_mobiledata,
-                                    onTap: () {},
-                                  ),
-                                  const SizedBox(width: 12),
-                                  _SocialIcon(icon: Icons.apple, onTap: () {}),
                                 ],
                               ),
-                              const SizedBox(height: 8),
+
+                              SizedBox(height: size.height * .01),
 
                               // Signup prompt
                               Row(
@@ -314,13 +387,21 @@ class _LoginScreenState extends State<Flutter>
                                 children: [
                                   const Text(
                                     'No account?',
-                                    style: TextStyle(color: Colors.white70),
+                                    style: TextStyle(color: AppColors.white70),
                                   ),
                                   TextButton(
-                                    onPressed: () {},
-                                    child: const Text(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.signUp,
+                                      );
+                                    },
+                                    child: Text(
                                       'Sign up',
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                        color: AppColors.blackColor,
+                                        fontSize: size.height * .018,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -330,14 +411,6 @@ class _LoginScreenState extends State<Flutter>
                         ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 18),
-
-                  // subtle footnote
-                  const Text(
-                    'Secure & encrypted — Chatify',
-                    style: TextStyle(color: Colors.white70),
                   ),
                 ],
               ),
@@ -358,18 +431,18 @@ InputDecoration _inputDecoration({
 }) {
   return InputDecoration(
     hintText: hint,
-    hintStyle: const TextStyle(color: Colors.white70),
-    prefixIcon: Icon(icon, color: Colors.white70),
+    hintStyle: const TextStyle(color: AppColors.white70),
+    prefixIcon: Icon(icon, color: AppColors.white70),
     suffixIcon: suffix,
     filled: true,
-    fillColor: Colors.white.withOpacity(0.04),
+    fillColor: AppColors.white10,
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: Colors.white.withOpacity(0.06)),
+      borderSide: BorderSide(color: AppColors.white12),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.white24),
+      borderSide: const BorderSide(color: AppColors.white24),
     ),
   );
 }
@@ -377,7 +450,7 @@ InputDecoration _inputDecoration({
 class _SoftCircle extends StatelessWidget {
   final double size;
   final Color color;
-  const _SoftCircle(this.size, this.color, {super.key});
+  const _SoftCircle(this.size, this.color);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -389,25 +462,23 @@ class _SoftCircle extends StatelessWidget {
 }
 
 class _AppLogo extends StatelessWidget {
-  const _AppLogo({super.key});
+  const _AppLogo();
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context).size;
     return Container(
       width: 58,
       height: 58,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
-          colors: [Color(0xFFFFC371), Color(0xFFFF5F6D)],
+          colors: [AppColors.lightYellow, AppColors.darkPeach],
         ),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 8),
-        ],
       ),
-      child: const Icon(
-        Icons.chat_bubble_rounded,
-        color: Colors.white,
-        size: 30,
+      child: Icon(
+        AppIcons.materialChatBubble,
+        color: AppColors.whiteColor,
+        size: mq.height * .03,
       ),
     );
   }
@@ -415,33 +486,29 @@ class _AppLogo extends StatelessWidget {
 
 class _SocialIcon extends StatelessWidget {
   final IconData icon;
-  final VoidCallback onTap;
-  const _SocialIcon({required this.icon, required this.onTap, super.key});
+  final VoidCallback? onTap;
+  final bool isLoading;
+  const _SocialIcon({required this.icon, this.onTap, this.isLoading = false});
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 44,
-        height: 44,
+        width: mq.height * .06,
+        height: mq.height * .06,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withOpacity(0.08),
-          border: Border.all(color: Colors.white12),
+          color: AppColors.white10,
+          border: Border.all(color: AppColors.white12),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: isLoading
+            ? Padding(
+                padding: EdgeInsets.all(mq.width * .025),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : Icon(icon, color: AppColors.whiteColor, size: mq.width * .12),
       ),
-    );
-  }
-}
-
-class HomePlaceholder extends StatelessWidget {
-  const HomePlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
-      body: const Center(child: Text('Logged in — Home Screen')),
     );
   }
 }

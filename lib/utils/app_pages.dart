@@ -15,7 +15,7 @@ class AppPages {
     return {
       AppRoutes.splash: (context) => const Splashscreen(),
       AppRoutes.onBoarding: (context) => const OnboardingScreen(),
-      AppRoutes.login: (context) => const Flutter(),
+      AppRoutes.login: (context) => const LoginScreen(),
       AppRoutes.signUp: (context) => const Signup(),
       AppRoutes.home: (context) => const HomeScreen(),
       AppRoutes.forgot: (context) => const ForgotPassword(),

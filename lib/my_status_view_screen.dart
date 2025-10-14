@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_box/add_status_screen.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/services/my_service/status_service.dart';
@@ -34,6 +36,7 @@ class MyStatusViewScreen extends StatelessWidget {
       ),
       body: FutureBuilder(
         future: StatusService().getUserStatuses(userId),
+        // future: StatusService().userHasStatus(userId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
@@ -52,6 +55,7 @@ class MyStatusViewScreen extends StatelessWidget {
             itemCount: statuses.length,
             itemBuilder: (context, index) {
               final status = statuses[index];
+              log(statuses.length.toString());
               return Center(
                 child: Text(
                   status.text ?? '',

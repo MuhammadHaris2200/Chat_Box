@@ -17,7 +17,7 @@ class StatusService {
             DateTime.now().subtract(Duration(days: 1)),
           ),
         )
-        .orderBy("timestamp", descending: false)
+        // .orderBy("timestamp", descending: false)
         .get();
 
     return snap.docs

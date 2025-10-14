@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_box/add_status_screen.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
@@ -143,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             GestureDetector(
                               onTap: () async {
+                                debugPrint(currentUserId.toString());
                                 final hasStatus = await StatusService()
                                     .userHasStatus(currentUserId!);
                                 if (hasStatus) {

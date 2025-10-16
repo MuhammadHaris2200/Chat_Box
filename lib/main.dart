@@ -1,3 +1,4 @@
+import 'package:chat_box/bottom_nav_bar.dart';
 import 'package:chat_box/viewModel/provider/chat_service_provider.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
@@ -46,9 +47,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      initialRoute: AppRoutes.splash,
-      routes: AppPages.getRoutes(),
-      //home: Flutter(),
+      //initialRoute: AppRoutes.splash,
+      //routes: AppPages.getRoutes(),
+      //home: BottomNavBarScreen(),
+      home: BottomNavBar(),
     );
   }
 }

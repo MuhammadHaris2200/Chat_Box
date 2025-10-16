@@ -12,6 +12,7 @@ class AppIcons {
   static const IconData materialAdd = Icons.add;
   static const IconData materialEmailIcon = Icons.email_outlined;
   static const IconData materialPersonIcon = Icons.person;
+  static const IconData materialPersonOutlined = Icons.person_outline;
   static const IconData materialLogOut = Icons.logout;
   static const IconData materialEmoji = Icons.emoji_emotions_outlined;
   static const IconData materialAttach = Icons.attach_file;
@@ -20,7 +21,13 @@ class AppIcons {
   static const IconData materialVisibility = Icons.visibility;
   static const IconData materialVisibilityOff = Icons.visibility_off;
   static const IconData materialGoogle = Icons.g_mobiledata;
-  static const IconData materialChatBubble = Icons.chat_bubble_rounded;
+  static const IconData materialChatBubble = Icons.chat_bubble;
+  static const IconData materialEdit = Icons.edit;
+  static const IconData materialCheck = Icons.check;
+  static const IconData materialClose = Icons.close;
+  static const IconData materialHomeoutlined = Icons.home_outlined;
+  static const IconData materialHome = Icons.home;
+  static const IconData materailChatBubbleOutlined = Icons.chat_bubble_outline;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;

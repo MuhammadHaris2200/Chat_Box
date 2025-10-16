@@ -56,7 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   /// message bhejne ka func
   void _sendMessage() async {
-    final text = _messageController.text.trim();  
+    final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
     final chatProvider = context.read<ChatServiceProvider>();
@@ -114,6 +114,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Text(
                       opponentName,
                       style: TextStyle(
+                        overflow: TextOverflow.ellipsis,
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
@@ -123,36 +124,65 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            centerTitle: true,
+            // centerTitle: true,
             actions: [
-              IconButton(
-                onPressed: () {
+              // IconButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (_) => VoiceCall()),
+              //     );
+              //   },
+              //   icon: Icon(AppIcons.materialCallIcon, size: mq.height * .030),
+              // ),
+              // SizedBox(width: mq.width * .02),
+              // Padding(
+              //   padding: EdgeInsets.only(right: mq.width * .08),
+              //   child: InkWell(
+              //     onTap: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(builder: (_) => VideoCall()),
+              //       );
+              //     },
+              //     child: Icon(
+              //       AppIcons.cupertinoVideoCall,
+              //       size: mq.height * .037,
+              //     ),
+              //   ),
+              // ),
+              InkWell(
+                onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => VoiceCall()),
+                    MaterialPageRoute(
+                      builder: (_) {
+                        return VoiceCall();
+                      },
+                    ),
                   );
                 },
-                icon: Icon(AppIcons.materialCallIcon, size: mq.height * .030),
+                child: Icon(AppIcons.cupertinoCallIcon),
               ),
               SizedBox(width: mq.width * .02),
               Padding(
-                padding: EdgeInsets.only(right: mq.width * .08),
+                padding: EdgeInsets.only(right: mq.width * .05),
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => VideoCall()),
+                      MaterialPageRoute(
+                        builder: (_) {
+                          return VideoCall();
+                        },
+                      ),
                     );
                   },
-                  child: Icon(
-                    AppIcons.cupertinoVideoCall,
-                    size: mq.height * .037,
-                  ),
+                  child: Icon(AppIcons.cupertinoVideoCall),
                 ),
               ),
             ],
           ),
-
 
           body: Container(
             color: AppColors.whiteColor,
@@ -179,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 "Say Hi 👋 to start the conversation",
                                 style: TextStyle(
                                   fontSize: mq.height * .02,
-                                  color: AppColors.white70,
+                                  color: AppColors.blackColor,
                                   fontStyle: FontStyle.italic,
                                 ),
                               ),
@@ -196,8 +226,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   text: msg['text'],
                                   isMe: isMe,
                                   opponentPic: opponentPic,
-                                  opponentName:
-                                      opponentName,
+                                  opponentName: opponentName,
                                 );
                               },
                             );

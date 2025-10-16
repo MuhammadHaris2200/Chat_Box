@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:chat_box/add_status_screen.dart';
 import 'package:chat_box/constants/app_colors.dart';
-import 'package:chat_box/constants/app_icons.dart';
-import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/model/status_item_model.dart';
 import 'package:chat_box/my_status_view_screen.dart';
 import 'package:chat_box/services/login_authentication/email_password.dart';
+import 'package:chat_box/services/my_service/friend_service.dart';
 import 'package:chat_box/services/my_service/status_service.dart';
 import 'package:chat_box/widgets/recent_chats.dart';
 import 'package:chat_box/widgets/search_results.dart';
@@ -31,6 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isSearching = false;
 
   final StatusService _statusService = StatusService();
+
+  String formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+
+    if (diff.inSeconds < 60) return 'Just now';
+    if (diff.inMinutes < 60) return "${diff.inMinutes} min ago";
+    if (diff.inHours < 24) return "${diff.inHours} hrs ago";
+
+    return "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,188 +125,210 @@ class _HomeScreenState extends State<HomeScreen> {
           //for status
           SizedBox(
             height: mq.height * .17,
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("statuses")
-                  .where("hasStatus", isEqualTo: true)
-                  .orderBy("lastUpdated", descending: true)
-                  .snapshots(),
-              builder: (context, snap) {
-                if (snap.connectionState == ConnectionState.waiting) {
+            child: FutureBuilder<List<String>>(
+              future: FriendService().getFriendsList(),
+              builder: (context, friendsSnap) {
+                if (friendsSnap.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                final docs = snap.data?.docs ?? [];
 
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: docs.length + 1,
-                  itemBuilder: (context, index) {
-                    //my status always shown
-                    if (index == 0) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: mq.width * .02,
-                          vertical: mq.height * .01,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                debugPrint(currentUserId.toString());
-                                final hasStatus = await StatusService()
-                                    .userHasStatus(currentUserId!);
-                                if (hasStatus) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) {
-                                        return MyStatusViewScreen(
-                                          userId: currentUserId!,
-                                        );
-                                      },
+                final friendIds = friendsSnap.data ?? [];
+                final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+                final allUserIds = [
+                  ...friendIds,
+                  currentUserId,
+                ]; // show friends + yourself
+
+                if (allUserIds.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'No statuses available',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
+
+                return StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("statuses")
+                      .where(FieldPath.documentId, whereIn: allUserIds)
+                      .orderBy("lastUpdated", descending: true)
+                      .snapshots(),
+                  builder: (context, snap) {
+                    if (snap.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final docs = snap.data?.docs ?? [];
+
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: docs.length + 1,
+                      itemBuilder: (context, index) {
+                        // 👇 My Status (always first)
+                        if (index == 0) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: mq.width * .02,
+                              vertical: mq.height * .01,
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    final hasStatus = await StatusService()
+                                        .userHasStatus(currentUserId);
+                                    if (hasStatus) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => MyStatusViewScreen(
+                                            userId: currentUserId,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => AddStatusScreen(),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: FutureBuilder<StatusItemModel?>(
+                                    future: _statusService.getLatestStatus(
+                                      currentUserId,
                                     ),
-                                  );
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) {
-                                        return AddStatusScreen();
-                                      },
-                                    ),
-                                  );
-                                }
-                              },
-                              child: FutureBuilder<StatusItemModel?>(
-                                future: _statusService.getLatestStatus(
-                                  currentUserId ?? '',
+                                    builder: (context, s) {
+                                      final latest = s.data;
+
+                                      return CircleAvatar(
+                                        radius: mq.width * .086,
+                                        backgroundColor: latest == null
+                                            ? AppColors.blueColor
+                                            : AppColors.lightPurpleColor,
+                                        child: latest == null
+                                            ? const Icon(
+                                                Icons.add,
+                                                color: Colors.white,
+                                              )
+                                            : Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: FittedBox(
+                                                  child: Text(
+                                                    (latest.text ?? '').length >
+                                                            12
+                                                        ? '${(latest.text ?? '').substring(0, 12)}...'
+                                                        : (latest.text ?? ''),
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                builder: (context, s) {
-                                  final latest = s.data;
+                                SizedBox(height: mq.height * .01),
+                                Text(
+                                  "My status",
+                                  style: TextStyle(color: AppColors.whiteColor),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
 
-                                  // if user has a latest text status, show preview, else show + icon
-                                  return CircleAvatar(
-                                    radius: mq.width * .086,
-                                    backgroundColor: latest == null
-                                        ? AppColors.blueColor
-                                        : AppColors
-                                              .lightPurpleColor, // pick color
-                                    child: latest == null
-                                        ? const Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                            size: 28,
-                                          )
-                                        : Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: FittedBox(
-                                              child: Text(
-                                                (latest.text ?? '').length > 12
-                                                    ? '${(latest.text ?? '').substring(0, 12)}...'
-                                                    : (latest.text ?? ''),
-                                                textAlign: TextAlign.center,
+                        // 👇 Friends’ statuses
+                        final doc = docs[index - 1];
+                        final parentData = doc.data() as Map<String, dynamic>;
+                        final userId = doc.id;
+                        final userName = parentData["name"] ?? "User";
+                        final profilePic = parentData["profilePic"] ?? "";
+
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: mq.width * .02,
+                            vertical: mq.height * .01,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  // open status
+                                },
+                                child: FutureBuilder<StatusItemModel?>(
+                                  future: _statusService.getLatestStatus(
+                                    userId,
+                                  ),
+                                  builder: (context, snapLatest) {
+                                    final latest = snapLatest.data;
+                                    if (latest == null) {
+                                      return CircleAvatar(
+                                        radius: mq.width * .086,
+                                        backgroundImage: profilePic.isNotEmpty
+                                            ? NetworkImage(profilePic)
+                                            : null,
+                                        child: profilePic.isEmpty
+                                            ? Text(
+                                                userName[0].toUpperCase(),
                                                 style: const TextStyle(
                                                   color: Colors.white,
+                                                  fontSize: 22,
                                                 ),
+                                              )
+                                            : null,
+                                      );
+                                    }
+
+                                    if (latest.type == 'text') {
+                                      return CircleAvatar(
+                                        radius: mq.width * .086,
+                                        backgroundColor:
+                                            Colors.deepPurpleAccent,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: FittedBox(
+                                            child: Text(
+                                              (latest.text ?? '').length > 12
+                                                  ? '${latest.text!.substring(0, 12)}...'
+                                                  : latest.text ?? '',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Colors.white,
                                               ),
                                             ),
                                           ),
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(height: mq.height * .01),
-                            Text(
-                              "My status",
-                              style: TextStyle(color: AppColors.whiteColor),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    final doc = docs[index - 1];
-                    final parentData = doc.data() as Map<String, dynamic>;
-                    final userId = doc.id;
-                    final userName = parentData["name"] ?? "User";
-
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: mq.width * .02,
-                        vertical: mq.height * .01,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {},
-                            child: FutureBuilder<StatusItemModel?>(
-                              future: _statusService.getLatestStatus(userId),
-                              builder: (context, snapLatest) {
-                                if (snapLatest.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircleAvatar(
-                                    radius: mq.width * .086,
-                                    backgroundColor: AppColors.greyColor,
-                                  );
-                                }
-                                final latest = snapLatest.data;
-                                if (latest == null) {
-                                  final profilePic =
-                                      parentData['profilePic'] as String? ?? '';
-                                  return CircleAvatar(
-                                    radius: mq.width * .086,
-                                    backgroundImage: profilePic.isNotEmpty
-                                        ? NetworkImage(profilePic)
-                                        : null,
-                                    child: profilePic.isEmpty
-                                        ? Icon(AppIcons.cupertinoPersonIcon)
-                                        : null,
-                                  );
-                                }
-                                if (latest.type == 'text') {
-                                  final preview = (latest.text ?? '');
-                                  return CircleAvatar(
-                                    radius: mq.width * .086,
-                                    backgroundColor: Colors.deepPurpleAccent,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: FittedBox(
-                                        child: Text(
-                                          preview.length > 12
-                                              ? '${preview.substring(0, 12)}...'
-                                              : preview,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return CircleAvatar(
-                                    radius: mq.width * .086,
-                                    backgroundImage: latest.imageUrl != null
-                                        ? NetworkImage(latest.imageUrl!)
-                                        : null,
-                                  );
-                                }
-                              },
-                            ),
+                                      );
+                                    } else {
+                                      return CircleAvatar(
+                                        radius: mq.width * .086,
+                                        backgroundImage: NetworkImage(
+                                          latest.imageUrl!,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: mq.height * .01),
+                              Text(
+                                userName,
+                                style: TextStyle(color: AppColors.whiteColor),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                          SizedBox(height: mq.height * .01),
-                          SizedBox(
-                            width: mq.width * .18,
-                            child: Text(
-                              userName,
-                              style: TextStyle(color: AppColors.whiteColor),
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     );
                   },
                 );

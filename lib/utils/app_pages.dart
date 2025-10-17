@@ -1,5 +1,7 @@
+import 'package:chat_box/bottom_nav_bar.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/flutter.dart';
+import 'package:chat_box/view/edit_profile_screen.dart';
 import 'package:chat_box/view/forgotPassword.dart';
 import 'package:chat_box/view/login.dart';
 import 'package:chat_box/view/onBoardingScreen.dart';
@@ -20,6 +22,8 @@ class AppPages {
       AppRoutes.home: (context) => const HomeScreen(),
       AppRoutes.forgot: (context) => const ForgotPassword(),
       AppRoutes.profile: (context) => const ProfileScreen(),
+      AppRoutes.bottomNavBar: (context) => const BottomNavBar(),
+      AppRoutes.profileEditScreen: (context) => const EditProfileScreen()
     };
   }
 }

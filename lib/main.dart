@@ -47,10 +47,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Chat Box",
-      //initialRoute: AppRoutes.splash,
-      //routes: AppPages.getRoutes(),
+      initialRoute: AppRoutes.splash,
+      routes: AppPages.getRoutes(),
       //home: BottomNavBarScreen(),
-      home: BottomNavBar(),
+      //home: BottomNavBar(),
     );
   }
 }

@@ -50,7 +50,9 @@ class _SendFriendRequestScreenState extends State<SendFriendRequestScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                _sendRequest();
+              },
               child: _loading
                   ? const CircularProgressIndicator()
                   : const Text("Send request"),

@@ -253,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ///phir yaha kaha k agr successfully login hojae user tw home page pe le jao
                     bool success = await signInProvider.signIn();
                     if (success) {
-                      Navigator.pushReplacementNamed(context, AppRoutes.home);
+                      Navigator.pushReplacementNamed(context, AppRoutes.bottomNavBar);
                     }
                   } catch (e) {
                     Fluttertoast.showToast(

@@ -3,6 +3,7 @@ import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/view/groupCall.dart';
 import 'package:chat_box/view/groupMessage.dart';
 import 'package:chat_box/view/homeScreen.dart';
+import 'package:chat_box/view/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -15,11 +16,12 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
 
-  //real screens jo hum bottom van bar k icons pe call krvaenge vo yaha call hogi
+  //real screens jo hum bottom van bar k 
+  //icons pe call krvaenge vo yaha call hogi
   final List<Widget> _screens = [
     const HomeScreen(),
     const Groupcall(),
-    const Groupmessage(),
+    const ProfileScreen(),
   ];
   @override
   Widget build(BuildContext context) {

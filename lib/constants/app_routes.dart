@@ -12,4 +12,6 @@ class AppRoutes {
   static const String profile = "/profile";
   static const String forgot = "/forgot";
   static const String chatScreen = "/chatScreen";
+  static const String bottomNavBar = "/bottomNavBar";
+  static const String profileEditScreen = "/profileEdit";
 }

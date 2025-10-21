@@ -106,15 +106,9 @@ class _HomeScreenState extends State<HomeScreen> {
               right: mq.width * .04,
               top: mq.height * .01,
             ),
-            child: InkWell(
-              onTap: () async {
-                await EmailPassword().logOut();
-                // Navigator.
-              },
-              child: CircleAvatar(
-                radius: 24,
-                backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
-              ),
+            child: CircleAvatar(
+              radius: 24,
+              backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
             ),
           ),
         ],

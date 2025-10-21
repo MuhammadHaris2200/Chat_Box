@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import '../constants/app_colors.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -106,9 +106,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _isLoading = false;
     });
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Profile updated succesfully!")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Profile updated succesfully!"),
+          backgroundColor: AppColors.blueColor,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       Navigator.pop(context);
     }
   }
@@ -143,7 +147,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         backgroundColor: AppColors.greyColor,
                         child:
                             _pickedImage == null &&
-                                (_profilePicUrl == null &&
+                                (_profilePicUrl == null ||
                                     _profilePicUrl!.isEmpty)
                             ? Icon(
                                 AppIcons.materialCamera,
@@ -151,6 +155,71 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 color: AppColors.whiteColor,
                               )
                             : null,
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    TextField(
+                      controller: _nameController,
+                      style: const TextStyle(color: AppColors.whiteColor),
+                      decoration: InputDecoration(
+                        labelText: "Name",
+                        labelStyle: const TextStyle(color: AppColors.white70),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.greenColor,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.greenColor,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextField(
+                      controller: _aboutController,
+                      style: const TextStyle(color: AppColors.whiteColor),
+                      decoration: InputDecoration(
+                        labelText: "About",
+                        labelStyle: const TextStyle(color: AppColors.white70),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.greenColor,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.greenColor,
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
+                      onPressed: _saveChanges,
+                      icon: Icon(
+                        AppIcons.materialSave,
+                        color: AppColors.whiteColor,
+                      ),
+                      label: Text("Save changes"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.greenColor,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],

@@ -6,16 +6,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class FriendService {
   final _db = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
 
-  /// Send friend request by email
+  /// -----------------------------
+  /// Send Friend Request by Email
+  /// -----------------------------
   Future<void> sendFriendRequest(String receiverEmail) async {
     final sender = _auth.currentUser;
     if (sender == null) throw Exception("User not logged in");
 
-    // Find receiver user by email
+    // 🔹 Find receiver user by email
     final receiverSnap = await _db
         .collection('users')
         .where('email', isEqualTo: receiverEmail)
@@ -26,7 +31,30 @@ class FriendService {
 
     final receiverId = receiverSnap.docs.first.id;
 
-    // Save friend request in Firestore
+    if (receiverId == sender.uid) {
+      throw Exception("You can’t send request to yourself");
+    }
+
+    // 🔹 Check if request already exists
+    final existing = await _db
+        .collection('friendRequests')
+        .where('senderId', isEqualTo: sender.uid)
+        .where('receiverId', isEqualTo: receiverId)
+        .get();
+
+    if (existing.docs.isNotEmpty) {
+      throw Exception("Request already sent");
+    }
+
+    // 🔹 Check if they are already friends
+    final senderDoc = await _db.collection('users').doc(sender.uid).get();
+    final senderFriends = (senderDoc.data()?['friends'] ?? []) as List;
+
+    if (senderFriends.contains(receiverId)) {
+      throw Exception("Already friends");
+    }
+
+    // 🔹 Send new friend request
     await _db.collection('friendRequests').add({
       'senderId': sender.uid,
       'receiverId': receiverId,
@@ -35,36 +63,51 @@ class FriendService {
     });
   }
 
-  /// Accept friend request
+  /// -----------------------------
+  /// Accept Friend Request
+  /// -----------------------------
   Future<void> acceptFriendRequest(String requestId, String senderId) async {
     final receiverId = _auth.currentUser?.uid;
     if (receiverId == null) throw Exception("User not logged in");
 
-    // Update status to accepted
+    // 🔹 Update status to 'accepted'
     await _db.collection('friendRequests').doc(requestId).update({
       'status': 'accepted',
     });
 
-    // Add each other to 'friends' list
-    await _db.collection('users').doc(receiverId).set({
-      'friends': FieldValue.arrayUnion([senderId]),
-    }, SetOptions(merge: true));
+    // 🔹 Add both users to each other’s friend list
+    final senderRef = _db.collection('users').doc(senderId);
+    final receiverRef = _db.collection('users').doc(receiverId);
 
-    await _db.collection('users').doc(senderId).set({
-      'friends': FieldValue.arrayUnion([receiverId]),
-    }, SetOptions(merge: true));
+    await _db.runTransaction((transaction) async {
+      transaction.set(senderRef, {
+        'friends': FieldValue.arrayUnion([receiverId]),
+      }, SetOptions(merge: true));
+
+      transaction.set(receiverRef, {
+        'friends': FieldValue.arrayUnion([senderId]),
+      }, SetOptions(merge: true));
+    });
   }
 
-  /// Reject friend request
+  /// -----------------------------
+  /// Reject Friend Request
+  /// -----------------------------
   Future<void> rejectFriendRequest(String requestId) async {
     await _db.collection('friendRequests').doc(requestId).update({
       'status': 'rejected',
     });
   }
 
-  /// Stream incoming friend requests
+  /// -----------------------------
+  /// Stream Incoming Friend Requests
+  /// -----------------------------
   Stream<QuerySnapshot> getIncomingRequests() {
     final uid = _auth.currentUser?.uid;
+    if (uid == null) {
+      throw Exception("User not logged in");
+    }
+
     return _db
         .collection('friendRequests')
         .where('receiverId', isEqualTo: uid)
@@ -72,9 +115,13 @@ class FriendService {
         .snapshots();
   }
 
-  /// Get friends list
+  /// -----------------------------
+  /// Get Friends List (IDs)
+  /// -----------------------------
   Future<List<String>> getFriendsList() async {
     final uid = _auth.currentUser?.uid;
+    if (uid == null) throw Exception("User not logged in");
+
     final doc = await _db.collection('users').doc(uid).get();
     final data = doc.data();
     return (data?['friends'] as List?)?.cast<String>() ?? [];

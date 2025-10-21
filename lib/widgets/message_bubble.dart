@@ -24,62 +24,62 @@ class MessageBubble extends StatelessWidget {
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!isMe)
-          Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 12, right: 4),
-                child: CircleAvatar(
-                  radius: 26,
-                  backgroundImage: opponentPic != ""
-                      ? NetworkImage(opponentPic)
-                      : null,
-                  child: opponentPic == ""
-                      ? Icon(
-                          AppIcons.cupertinoPersonIcon,
-                          size: 24,
-                          color: Colors.white,
-                        )
-                      : null,
-                ),
-              ),
-            ],
-          ),
-
+        // if (!isMe)
+        //   Column(
+        //     children: [
+        //       Padding(
+        //         padding: EdgeInsets.only(left: 12, right: 4),
+        //         child: CircleAvatar(
+        //           radius: 26,
+        //           backgroundImage: opponentPic != ""
+        //               ? NetworkImage(opponentPic)
+        //               : null,
+        //           child: opponentPic == ""
+        //               ? Icon(
+        //                   AppIcons.cupertinoPersonIcon,
+        //                   size: 24,
+        //                   color: Colors.white,
+        //                 )
+        //               : null,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
         Flexible(
           child: Column(
             crossAxisAlignment: isMe
                 ? CrossAxisAlignment.end
                 : CrossAxisAlignment.start,
             children: [
-              if (!isMe)
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: mq.width * .03,
-                    top: mq.height * .001,
-                  ),
-                  child: Text(
-                    opponentName,
-                    style: TextStyle(
-                      fontSize: mq.height * .024,
-                      color: AppColors.blackColor,
-                      //fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+              // if (!isMe)
+              //   Padding(
+              //     padding: EdgeInsets.only(
+              //       left: mq.width * .03,
+              //       top: mq.height * .001,
+              //     ),
+              //     child: Text(
+              //       opponentName,
+              //       style: TextStyle(
+              //         fontSize: mq.height * .024,
+              //         color: AppColors.blackColor,
+              //         //fontWeight: FontWeight.w500,
+              //       ),
+              //     ),
+              //   ),
 
               /// Message bubble
               Padding(
                 padding: EdgeInsets.only(
-                  left: mq.width * .06,
+                  left: mq.width * .02,
                   top: mq.height * .003,
+                  right: mq.width * .04
                 ),
                 child: Container(
                   //height: double.infinity,
                   //width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   margin: EdgeInsets.symmetric(
-                    vertical: mq.height * .001,
+                    vertical: mq.height * .004,
                     horizontal: 8,
                   ),
                   decoration: BoxDecoration(

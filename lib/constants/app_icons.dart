@@ -29,6 +29,7 @@ class AppIcons {
   static const IconData materialHome = Icons.home;
   static const IconData materailChatBubbleOutlined = Icons.chat_bubble_outline;
   static const IconData materialCamera = Icons.camera_alt;
+  static const IconData materialSave = Icons.save;
 
   ///Cupertino Icons
   static const IconData cupertinoSearchIcon = CupertinoIcons.search;

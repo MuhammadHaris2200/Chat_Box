@@ -1,18 +1,30 @@
-import 'dart:developer';
-
-import 'package:chat_box/add_status_screen.dart';
+import 'package:chat_box/bottom_nav_bar.dart';
 import 'package:chat_box/constants/app_colors.dart';
-import 'package:chat_box/constants/app_icons.dart';
 import 'package:chat_box/services/my_service/status_service.dart';
 import 'package:flutter/material.dart';
+import 'package:story_view/story_view.dart';
 
-class MyStatusViewScreen extends StatelessWidget {
+class MyStatusViewScreen extends StatefulWidget {
   final String userId;
   const MyStatusViewScreen({super.key, required this.userId});
 
   @override
+  State<MyStatusViewScreen> createState() => _MyStatusViewScreenState();
+}
+
+class _MyStatusViewScreenState extends State<MyStatusViewScreen> {
+  final StoryController _storyController = StoryController();
+
+  @override
+  void dispose() {
+    _storyController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context).size;
+    //final mq = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: AppColors.lightBlue,
       appBar: AppBar(
@@ -23,25 +35,11 @@ class MyStatusViewScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) {
-                return AddStatusScreen();
-              },
-            ),
-          );
-        },
-        backgroundColor: AppColors.peachColor,
-        child: Icon(AppIcons.materialEdit, color: AppColors.blackColor),
-      ),
       body: FutureBuilder(
-        future: StatusService().getUserStatuses(userId),
+        future: StatusService().getUserStatuses(widget.userId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           final statuses = snapshot.data!;
@@ -53,18 +51,37 @@ class MyStatusViewScreen extends StatelessWidget {
               ),
             );
           }
-          return PageView.builder(
-            itemCount: statuses.length,
-            itemBuilder: (context, index) {
-              final status = statuses[index];
-              log(statuses.length.toString());
-              return Center(
-                child: Text(
-                  status.text ?? '',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.blackColor, fontSize: 24),
+
+          // Convert statuses into StoryItems (text/image/video)
+          final storyItems = statuses.map((status) {
+            if (status.imageUrl != null && status.imageUrl!.isNotEmpty) {
+              return StoryItem.pageImage(
+                url: status.imageUrl!,
+                controller: _storyController,
+              );
+            } else {
+              return StoryItem.text(
+                title: status.text ?? '',
+                backgroundColor: AppColors.peachColor,
+                textStyle: const TextStyle(
+                  fontSize: 24,
+                  color: AppColors.blackColor,
                 ),
               );
+            }
+          }).toList();
+
+          return StoryView(
+            storyItems: storyItems,
+            controller: _storyController,
+            onComplete: () {
+              Navigator.pop(context);
+              BottomNavBar();
+            },
+            onVerticalSwipeComplete: (direction) {
+              if (direction == Direction.down) {
+                Navigator.pop(context);
+              }
             },
           );
         },

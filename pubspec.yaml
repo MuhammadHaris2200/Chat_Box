@@ -40,14 +40,18 @@ dependencies:
   cloud_firestore: ^6.0.2
   google_sign_in: ^6.2.1
   fluttertoast: ^9.0.0
-  zego_uikit_prebuilt_call: ^4.19.0
+  
   font_awesome_flutter: ^10.9.1
   image_picker: ^1.2.0
   firebase_storage: ^13.0.2
   permission_handler: ^12.0.1
-  zego_uikit_signaling_plugin: ^2.8.18
+  
   zego_zim: ^2.21.1+2
   http: ^1.5.0
+  zego_uikit_prebuilt_call: ^4.19.2
+  zego_uikit_signaling_plugin: ^2.8.18
+  zego_uikit: ^2.28.28
+  story_view: ^0.16.6
 
 dev_dependencies:
   flutter_test:

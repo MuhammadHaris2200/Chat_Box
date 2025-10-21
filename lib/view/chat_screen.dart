@@ -1,6 +1,3 @@
-import 'package:chat_box/constants/app_icons.dart';
-import 'package:chat_box/video_call.dart';
-import 'package:chat_box/voice_call.dart';
 import 'package:chat_box/viewModel/provider/chat_service_provider.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/widgets/message_bubble.dart';
@@ -8,12 +5,11 @@ import 'package:chat_box/widgets/message_input.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:zego_uikit/zego_uikit.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class ChatScreen extends StatefulWidget {
-  ///Current logged in user
   final String currentUserId;
-
-  ///vo user jis se chat horhi ho
   final String otherUserId;
 
   const ChatScreen({
@@ -27,26 +23,19 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  ///message sending controller
   final TextEditingController _messageController = TextEditingController();
-
-  ///variable for unique id of two users, initialize late in init state
   late String chatId;
 
-  ///init state
   @override
   void initState() {
     super.initState();
-
     final chatProvider = Provider.of<ChatServiceProvider>(
       context,
       listen: false,
     );
 
-    ///here we initialize unique id of two users
     chatId = chatProvider.chatId(widget.currentUserId, widget.otherUserId);
 
-    ///if chat doesn't exist, we create
     chatProvider.createChatIfNotExist(
       chatId,
       widget.currentUserId,
@@ -54,13 +43,10 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  /// message bhejne ka func
   void _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
-
     final chatProvider = context.read<ChatServiceProvider>();
-
     await chatProvider.sendMessage(widget.currentUserId, chatId, text);
     _messageController.clear();
   }
@@ -94,12 +80,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 CircleAvatar(
                   radius: 24,
                   backgroundColor: AppColors.yellowColor,
-                  backgroundImage: opponentPic != ""
+                  backgroundImage: opponentPic.isNotEmpty
                       ? NetworkImage(opponentPic)
                       : null,
-                  child: opponentPic == ""
+                  child: opponentPic.isEmpty
                       ? Text(
-                          opponentName[0].toUpperCase(),
+                          opponentName.isNotEmpty
+                              ? opponentName[0].toUpperCase()
+                              : "?",
                           style: TextStyle(
                             fontSize: mq.height * .03,
                             color: AppColors.blackColor,
@@ -113,8 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   children: [
                     Text(
                       opponentName,
-                      style: TextStyle(
-                        overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
@@ -124,63 +111,61 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-            // centerTitle: true,
+
             actions: [
               // IconButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(builder: (_) => VoiceCall()),
-              //     );
-              //   },
-              //   icon: Icon(AppIcons.materialCallIcon, size: mq.height * .030),
+              //   icon: const Icon(Icons.call),
+              //   onPressed: () =>
+              //       _sendVoiceCall(widget.otherUserId, opponentName),
               // ),
-              // SizedBox(width: mq.width * .02),
-              // Padding(
-              //   padding: EdgeInsets.only(right: mq.width * .08),
-              //   child: InkWell(
-              //     onTap: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(builder: (_) => VideoCall()),
-              //       );
-              //     },
-              //     child: Icon(
-              //       AppIcons.cupertinoVideoCall,
-              //       size: mq.height * .037,
-              //     ),
-              //   ),
-              // ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) {
-                        return VoiceCall();
-                      },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    // height: 20,
+                    width: mq.width * .12,
+                    child: ZegoSendCallInvitationButton(
+                      isVideoCall: false,
+                      resourceID: "zegouikit_call",
+                      invitees: [
+                        ZegoUIKitUser(
+                          id: widget.otherUserId,
+                          name: opponentName,
+                        ),
+                        // log();
+                        // ...ZegoUIKitUser(id: widget.otherUserId, name: opponentName),
+                      ],
+                      buttonSize: Size(mq.width * .12, mq.height * .12),
+                      iconSize: Size(30, 30),
                     ),
-                  );
-                },
-                child: Icon(AppIcons.cupertinoCallIcon),
-              ),
-              SizedBox(width: mq.width * .02),
-              Padding(
-                padding: EdgeInsets.only(right: mq.width * .05),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) {
-                          return VideoCall();
-                        },
+                  ),
+                  //SizedBox(width: mq.width * .01),
+                  Padding(
+                    padding: EdgeInsets.only(right: mq.width * .02),
+                    child: SizedBox(
+                      width: mq.width * .12,
+                      child: ZegoSendCallInvitationButton(
+                        isVideoCall: true,
+                        resourceID: "zegouikit_call",
+                        invitees: [
+                          ZegoUIKitUser(
+                            id: widget.otherUserId,
+                            name: opponentName,
+                          ),
+                        ],
+                        buttonSize: Size(mq.width * .12, mq.height * .12),
+                        iconSize: Size(30, 30),
                       ),
-                    );
-                  },
-                  child: Icon(AppIcons.cupertinoVideoCall),
-                ),
+                    ),
+                  ),
+                ],
               ),
+              // IconButton(
+              //   icon: const Icon(Icons.videocam),
+              //   onPressed: () =>
+              //       _sendVideoCall(widget.otherUserId, opponentName),
+              // ),
+              const SizedBox(width: 8),
             ],
           ),
 
@@ -198,7 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return const Center(child: SizedBox());
+                        return const Center(child: CircularProgressIndicator());
                       }
 
                       final messages = snapshot.data!.docs;

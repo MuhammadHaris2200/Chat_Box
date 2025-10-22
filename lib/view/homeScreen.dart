@@ -117,218 +117,218 @@ class _HomeScreenState extends State<HomeScreen> {
         ///users status
         children: [
           //for status
-          SizedBox(
-            height: mq.height * .17,
-            child: FutureBuilder<List<String>>(
-              future: FriendService().getFriendsList(),
-              builder: (context, friendsSnap) {
-                if (friendsSnap.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          // SizedBox(
+          //   height: mq.height * .17,
+          //   child: FutureBuilder<List<String>>(
+          //     future: FriendService().getFriendsList(),
+          //     builder: (context, friendsSnap) {
+          //       if (friendsSnap.connectionState == ConnectionState.waiting) {
+          //         return const Center(child: CircularProgressIndicator());
+          //       }
 
-                final friendIds = friendsSnap.data ?? [];
-                final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-                final allUserIds = [
-                  ...friendIds,
-                  currentUserId,
-                ]; // show friends + yourself
+          //       final friendIds = friendsSnap.data ?? [];
+          //       final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+          //       final allUserIds = [
+          //         ...friendIds,
+          //         currentUserId,
+          //       ]; // show friends + yourself
 
-                if (allUserIds.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No statuses available',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  );
-                }
+          //       if (allUserIds.isEmpty) {
+          //         return const Center(
+          //           child: Text(
+          //             'No statuses available',
+          //             style: TextStyle(color: Colors.white),
+          //           ),
+          //         );
+          //       }
 
-                return StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("statuses")
-                      .where(FieldPath.documentId, whereIn: allUserIds)
-                      .orderBy("lastUpdated", descending: true)
-                      .snapshots(),
-                  builder: (context, snap) {
-                    if (snap.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+          //       return StreamBuilder(
+          //         stream: FirebaseFirestore.instance
+          //             .collection("statuses")
+          //             .where(FieldPath.documentId, whereIn: allUserIds)
+          //             .orderBy("lastUpdated", descending: true)
+          //             .snapshots(),
+          //         builder: (context, snap) {
+          //           if (snap.connectionState == ConnectionState.waiting) {
+          //             return const Center(child: CircularProgressIndicator());
+          //           }
 
-                    final docs = snap.data?.docs ?? [];
+          //           final docs = snap.data?.docs ?? [];
 
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: docs.length + 1,
-                      itemBuilder: (context, index) {
-                        // 👇 My Status (always first)
-                        if (index == 0) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: mq.width * .02,
-                              vertical: mq.height * .01,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    final hasStatus = await StatusService()
-                                        .userHasStatus(currentUserId);
-                                    if (hasStatus) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => MyStatusViewScreen(
-                                            userId: currentUserId,
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => AddStatusScreen(),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: FutureBuilder<StatusItemModel?>(
-                                    future: _statusService.getLatestStatus(
-                                      currentUserId,
-                                    ),
-                                    builder: (context, s) {
-                                      final latest = s.data;
+          //           return ListView.builder(
+          //             scrollDirection: Axis.horizontal,
+          //             itemCount: docs.length + 1,
+          //             itemBuilder: (context, index) {
+          //               // 👇 My Status (always first)
+          //               if (index == 0) {
+          //                 return Padding(
+          //                   padding: EdgeInsets.symmetric(
+          //                     horizontal: mq.width * .02,
+          //                     vertical: mq.height * .01,
+          //                   ),
+          //                   child: Column(
+          //                     mainAxisSize: MainAxisSize.min,
+          //                     children: [
+          //                       GestureDetector(
+          //                         onTap: () async {
+          //                           final hasStatus = await StatusService()
+          //                               .userHasStatus(currentUserId);
+          //                           if (hasStatus) {
+          //                             Navigator.push(
+          //                               context,
+          //                               MaterialPageRoute(
+          //                                 builder: (_) => MyStatusViewScreen(
+          //                                   userId: currentUserId,
+          //                                 ),
+          //                               ),
+          //                             );
+          //                           } else {
+          //                             Navigator.push(
+          //                               context,
+          //                               MaterialPageRoute(
+          //                                 builder: (_) => AddStatusScreen(),
+          //                               ),
+          //                             );
+          //                           }
+          //                         },
+          //                         child: FutureBuilder<StatusItemModel?>(
+          //                           future: _statusService.getLatestStatus(
+          //                             currentUserId,
+          //                           ),
+          //                           builder: (context, s) {
+          //                             final latest = s.data;
 
-                                      return CircleAvatar(
-                                        radius: mq.width * .086,
-                                        backgroundColor: latest == null
-                                            ? AppColors.blueColor
-                                            : AppColors.lightPurpleColor,
-                                        child: latest == null
-                                            ? const Icon(
-                                                Icons.add,
-                                                color: Colors.white,
-                                              )
-                                            : Padding(
-                                                padding: const EdgeInsets.all(
-                                                  8.0,
-                                                ),
-                                                child: FittedBox(
-                                                  child: Text(
-                                                    (latest.text ?? '').length >
-                                                            12
-                                                        ? '${(latest.text ?? '').substring(0, 12)}...'
-                                                        : (latest.text ?? ''),
-                                                    textAlign: TextAlign.center,
-                                                    style: const TextStyle(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                SizedBox(height: mq.height * .01),
-                                Text(
-                                  "My status",
-                                  style: TextStyle(color: AppColors.whiteColor),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
+          //                             return CircleAvatar(
+          //                               radius: mq.width * .086,
+          //                               backgroundColor: latest == null
+          //                                   ? AppColors.blueColor
+          //                                   : AppColors.lightPurpleColor,
+          //                               child: latest == null
+          //                                   ? const Icon(
+          //                                       Icons.add,
+          //                                       color: Colors.white,
+          //                                     )
+          //                                   : Padding(
+          //                                       padding: const EdgeInsets.all(
+          //                                         8.0,
+          //                                       ),
+          //                                       child: FittedBox(
+          //                                         child: Text(
+          //                                           (latest.text ?? '').length >
+          //                                                   12
+          //                                               ? '${(latest.text ?? '').substring(0, 12)}...'
+          //                                               : (latest.text ?? ''),
+          //                                           textAlign: TextAlign.center,
+          //                                           style: const TextStyle(
+          //                                             color: Colors.white,
+          //                                           ),
+          //                                         ),
+          //                                       ),
+          //                                     ),
+          //                             );
+          //                           },
+          //                         ),
+          //                       ),
+          //                       SizedBox(height: mq.height * .01),
+          //                       Text(
+          //                         "My status",
+          //                         style: TextStyle(color: AppColors.whiteColor),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                 );
+          //               }
 
-                        // 👇 Friends’ statuses
-                        final doc = docs[index - 1];
-                        final parentData = doc.data() as Map<String, dynamic>;
-                        final userId = doc.id;
-                        final userName = parentData["name"] ?? "User";
-                        final profilePic = parentData["profilePic"] ?? "";
+          //               // 👇 Friends’ statuses
+          //               final doc = docs[index - 1];
+          //               final parentData = doc.data() as Map<String, dynamic>;
+          //               final userId = doc.id;
+          //               final userName = parentData["name"] ?? "User";
+          //               final profilePic = parentData["profilePic"] ?? "";
 
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: mq.width * .02,
-                            vertical: mq.height * .01,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  // open status
-                                },
-                                child: FutureBuilder<StatusItemModel?>(
-                                  future: _statusService.getLatestStatus(
-                                    userId,
-                                  ),
-                                  builder: (context, snapLatest) {
-                                    final latest = snapLatest.data;
-                                    if (latest == null) {
-                                      return CircleAvatar(
-                                        radius: mq.width * .086,
-                                        backgroundImage: profilePic.isNotEmpty
-                                            ? NetworkImage(profilePic)
-                                            : null,
-                                        child: profilePic.isEmpty
-                                            ? Text(
-                                                userName[0].toUpperCase(),
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 22,
-                                                ),
-                                              )
-                                            : null,
-                                      );
-                                    }
+          //               return Padding(
+          //                 padding: EdgeInsets.symmetric(
+          //                   horizontal: mq.width * .02,
+          //                   vertical: mq.height * .01,
+          //                 ),
+          //                 child: Column(
+          //                   mainAxisSize: MainAxisSize.min,
+          //                   children: [
+          //                     GestureDetector(
+          //                       onTap: () {
+          //                         // open status
+          //                       },
+          //                       child: FutureBuilder<StatusItemModel?>(
+          //                         future: _statusService.getLatestStatus(
+          //                           userId,
+          //                         ),
+          //                         builder: (context, snapLatest) {
+          //                           final latest = snapLatest.data;
+          //                           if (latest == null) {
+          //                             return CircleAvatar(
+          //                               radius: mq.width * .086,
+          //                               backgroundImage: profilePic.isNotEmpty
+          //                                   ? NetworkImage(profilePic)
+          //                                   : null,
+          //                               child: profilePic.isEmpty
+          //                                   ? Text(
+          //                                       userName[0].toUpperCase(),
+          //                                       style: const TextStyle(
+          //                                         color: Colors.white,
+          //                                         fontSize: 22,
+          //                                       ),
+          //                                     )
+          //                                   : null,
+          //                             );
+          //                           }
 
-                                    if (latest.type == 'text') {
-                                      return CircleAvatar(
-                                        radius: mq.width * .086,
-                                        backgroundColor:
-                                            Colors.deepPurpleAccent,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: FittedBox(
-                                            child: Text(
-                                              (latest.text ?? '').length > 12
-                                                  ? '${latest.text!.substring(0, 12)}...'
-                                                  : latest.text ?? '',
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      return CircleAvatar(
-                                        radius: mq.width * .086,
-                                        backgroundImage: NetworkImage(
-                                          latest.imageUrl!,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                              SizedBox(height: mq.height * .01),
-                              Text(
-                                userName,
-                                style: TextStyle(color: AppColors.whiteColor),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-            ),
-          ),
+          //                           if (latest.type == 'text') {
+          //                             return CircleAvatar(
+          //                               radius: mq.width * .086,
+          //                               backgroundColor:
+          //                                   Colors.deepPurpleAccent,
+          //                               child: Padding(
+          //                                 padding: const EdgeInsets.all(8.0),
+          //                                 child: FittedBox(
+          //                                   child: Text(
+          //                                     (latest.text ?? '').length > 12
+          //                                         ? '${latest.text!.substring(0, 12)}...'
+          //                                         : latest.text ?? '',
+          //                                     textAlign: TextAlign.center,
+          //                                     style: const TextStyle(
+          //                                       color: Colors.white,
+          //                                     ),
+          //                                   ),
+          //                                 ),
+          //                               ),
+          //                             );
+          //                           } else {
+          //                             return CircleAvatar(
+          //                               radius: mq.width * .086,
+          //                               backgroundImage: NetworkImage(
+          //                                 latest.imageUrl!,
+          //                               ),
+          //                             );
+          //                           }
+          //                         },
+          //                       ),
+          //                     ),
+          //                     SizedBox(height: mq.height * .01),
+          //                     Text(
+          //                       userName,
+          //                       style: TextStyle(color: AppColors.whiteColor),
+          //                       overflow: TextOverflow.ellipsis,
+          //                     ),
+          //                   ],
+          //                 ),
+          //               );
+          //             },
+          //           );
+          //         },
+          //       );
+          //     },
+          //   ),
+          // ),
 
           ///Recent chats
           Expanded(

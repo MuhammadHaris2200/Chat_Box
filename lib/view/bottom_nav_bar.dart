@@ -1,7 +1,6 @@
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
-import 'package:chat_box/view/groupCall.dart';
-import 'package:chat_box/view/groupMessage.dart';
+import 'package:chat_box/view/friend_screen.dart';
 import 'package:chat_box/view/homeScreen.dart';
 import 'package:chat_box/view/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   //icons pe call krvaenge vo yaha call hogi
   final List<Widget> _screens = [
     const HomeScreen(),
-    const Groupcall(),
+    FriendsScreen(),
     const ProfileScreen(),
   ];
   @override

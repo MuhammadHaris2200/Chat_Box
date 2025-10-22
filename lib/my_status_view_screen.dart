@@ -1,4 +1,4 @@
-import 'package:chat_box/bottom_nav_bar.dart';
+import 'package:chat_box/view/bottom_nav_bar.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/services/my_service/status_service.dart';
 import 'package:flutter/material.dart';

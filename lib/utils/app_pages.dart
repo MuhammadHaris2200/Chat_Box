@@ -1,4 +1,4 @@
-import 'package:chat_box/bottom_nav_bar.dart';
+import 'package:chat_box/view/bottom_nav_bar.dart';
 import 'package:chat_box/constants/app_routes.dart';
 import 'package:chat_box/flutter.dart';
 import 'package:chat_box/view/edit_profile_screen.dart';

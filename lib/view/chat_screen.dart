@@ -146,6 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       width: mq.width * .12,
                       child: ZegoSendCallInvitationButton(
                         isVideoCall: true,
+                        
                         resourceID: "zegouikit_call",
                         invitees: [
                           ZegoUIKitUser(

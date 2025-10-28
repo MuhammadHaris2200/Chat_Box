@@ -59,6 +59,10 @@ class ContactsTab extends StatelessWidget {
                   ), // add navigation to chat screen
                   onTap: () {
                     // open chat with friendId
+                    // ChatScreen(
+                    //   currentUserId: currentUid,
+                    //   otherUserId: friendId,
+                    // );
                   },
                 );
               },

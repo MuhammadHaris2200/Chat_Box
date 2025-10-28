@@ -53,19 +53,17 @@ Future<void> main() async {
   final auth = FirebaseAuth.instance;
   final currentUser = auth.currentUser;
 
-  // Navigator key
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
-  // ✅ Always prepare calling service globally
-  ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
-    [ZegoUIKitSignalingPlugin()],
-  );
+  ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI([
+    ZegoUIKitSignalingPlugin(),
+  ]);
 
-  // ✅ If already logged in, initialize immediately
   if (currentUser != null) {
     await ZegoUIKitPrebuiltCallInvitationService().init(
       appID: 1904149914,
-      appSign: "575027252986deab4d57d09ad2d261c1d3da24a8a0b4362004b0b533b64e66cf",
+      appSign:
+          "575027252986deab4d57d09ad2d261c1d3da24a8a0b4362004b0b533b64e66cf",
       userID: currentUser.uid,
       userName: currentUser.displayName ?? currentUser.email ?? "User",
       plugins: [ZegoUIKitSignalingPlugin()],
@@ -89,7 +87,6 @@ Future<void> main() async {
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

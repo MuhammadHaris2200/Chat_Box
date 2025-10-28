@@ -19,7 +19,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   //icons pe call krvaenge vo yaha call hogi
   final List<Widget> _screens = [
     const HomeScreen(),
-    FriendsScreen(),
+    const FriendsScreen(),
     const ProfileScreen(),
   ];
   @override

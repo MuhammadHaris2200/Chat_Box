@@ -1,4 +1,6 @@
+import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/constants/app_icons.dart';
+import 'package:chat_box/services/my_service/friend_service.dart';
 import 'package:chat_box/view/chat_screen.dart';
 import 'package:chat_box/services/my_service/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -80,16 +82,67 @@ class SearchResultsList extends StatelessWidget {
                     );
                   },
                 ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ChatScreen(
-                        currentUserId: currentUserId,
-                        otherUserId: user.id,
-                      ),
-                    ),
+                onTap: () async {
+                  final friendService = FriendService();
+
+                  final areFriends = await friendService.areFriends(
+                    currentUserId,
+                    user.id,
                   );
+                  if (areFriends) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) {
+                          return ChatScreen(
+                            currentUserId: currentUserId,
+                            otherUserId: user.id,
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text("You can only chat with your friends."),
+                          backgroundColor: AppColors.blueColor,
+                          behavior: SnackBarBehavior.floating,
+                          action: SnackBarAction(
+                            label: "Send request",
+
+                            onPressed: () async {
+                              final senderDoc = await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(currentUserId)
+                                  .get();
+                              try {
+                                await friendService.sendFriendRequest(
+                                  receiverId: user.id,
+                                  receiverName: user['name'],
+                                  senderName: senderDoc["name"],
+                                );
+
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Friend request sent!"),
+                                    ),
+                                  );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context)
+                                  ..hideCurrentSnackBar()
+                                  ..showSnackBar(
+                                    SnackBar(content: Text("Error: $e")),
+                                  );
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                  }
                 },
               ),
             );

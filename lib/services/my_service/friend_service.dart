@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class FriendService {
   final _db = FirebaseFirestore.instance;
@@ -8,7 +7,7 @@ class FriendService {
 
   String get uid => _auth.currentUser!.uid;
 
-  //Stream - incoming pending request for current user
+  /// 🔹 Stream - incoming pending requests for current user
   Stream<List<QueryDocumentSnapshot>> incomingRequestsStream() {
     return _db
         .collection("friend_requests")
@@ -19,7 +18,7 @@ class FriendService {
         .map((snap) => snap.docs);
   }
 
-  //Stream - contacts where current user is a member
+  /// 🔹 Stream - contacts where current user is a member
   Stream<List<QueryDocumentSnapshot>> contactsStream() {
     return _db
         .collection("contacts")
@@ -29,6 +28,7 @@ class FriendService {
         .map((snap) => snap.docs);
   }
 
+  /// 🔹 Send Friend Request
   Future<void> sendFriendRequest({
     required String receiverId,
     required String receiverName,
@@ -37,10 +37,10 @@ class FriendService {
   }) async {
     if (receiverId == uid) throw Exception("Can't send request to yourself");
 
-    //check already contacts
+    // ✅ Check already contacts
     final contacts = await _db
         .collection("contacts")
-        .where("member", arrayContains: uid)
+        .where("members", arrayContains: uid)
         .get();
 
     final alreadyFriends = contacts.docs.any((d) {
@@ -49,7 +49,7 @@ class FriendService {
     });
     if (alreadyFriends) throw Exception("You are already friends");
 
-    //check pending requests
+    // ✅ Check pending requests (both directions)
     final pending1 = await _db
         .collection("friend_requests")
         .where("senderId", isEqualTo: uid)
@@ -59,7 +59,7 @@ class FriendService {
     final pending2 = await _db
         .collection("friend_requests")
         .where("senderId", isEqualTo: receiverId)
-        .where("receiverId", isEqualTo: receiverId)
+        .where("receiverId", isEqualTo: uid)
         .get();
 
     if (pending1.docs.any((d) => d["status"] == 'pending') ||
@@ -67,18 +67,19 @@ class FriendService {
       throw Exception("There is already a pending request between you");
     }
 
-    //create request
+    // ✅ Create request
     await _db.collection("friend_requests").add({
       "senderId": uid,
       "senderName": senderName,
       "receiverId": receiverId,
+      "receiverName": receiverName,
       "message": message ?? '',
       "status": "pending",
       "createdAt": FieldValue.serverTimestamp(),
     });
   }
 
-  //Accept request: update request + create contact
+  /// 🔹 Accept request: update + create contact
   Future<void> acceptRequest(String requestId) async {
     final reqRef = _db.collection("friend_requests").doc(requestId);
 
@@ -90,7 +91,7 @@ class FriendService {
 
       tx.update(reqRef, {"status": "accepted"});
 
-      //create contact
+      // create contact
       final contactRef = _db.collection("contacts").doc();
       tx.set(contactRef, {
         "user1": data["senderId"],
@@ -101,14 +102,48 @@ class FriendService {
     });
   }
 
-  //Reject request
+  /// 🔹 Reject request
   Future<void> rejectRequest(String requestId) async {
-    final reqRef = _db.collection("friend_requests").doc(requestId);
-    await reqRef.update({"status": "rejected"});
+    await _db.collection("friend_requests").doc(requestId).update({
+      "status": "rejected",
+    });
   }
 
-  //cancel sent request
+  /// 🔹 Cancel sent request
   Future<void> cancelRequest(String requestId) async {
-    await _db.collection("friend_request").doc(requestId).delete();
+    await _db.collection("friend_requests").doc(requestId).delete();
   }
+
+  /// 🔹 Get all friend IDs (contacts)
+  Future<List<String>> getFriendsList() async {
+    final snap = await _db
+        .collection("contacts")
+        .where("members", arrayContains: uid)
+        .get();
+
+    final List<String> friendIds = [];
+    for (var doc in snap.docs) {
+      final members = List<String>.from(doc["members"]);
+      members.remove(uid);
+      friendIds.addAll(members);
+    }
+    return friendIds;
+  }
+   
+   //check that they are friends
+  Future<bool> areFriends(String userId1, String userId2) async {
+  final snapshot = await FirebaseFirestore.instance
+      .collection('friends')
+      .where('members', arrayContainsAny: [userId1, userId2])
+      .get();
+
+  for (var doc in snapshot.docs) {
+    final members = List<String>.from(doc['members'] ?? []);
+    if (members.contains(userId1) && members.contains(userId2)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }

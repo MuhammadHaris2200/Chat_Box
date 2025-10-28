@@ -1,5 +1,6 @@
 import 'package:chat_box/view/contacts_tab.dart';
 import 'package:chat_box/view/incoming_request_tab.dart';
+import 'package:chat_box/view/send_request_tab';
 import 'package:flutter/material.dart';
 
 class FriendsScreen extends StatefulWidget {
@@ -14,13 +15,15 @@ class _FriendsScreenState extends State<FriendsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,15 +34,13 @@ class _FriendsScreenState extends State<FriendsScreen>
           tabs: const [
             Tab(text: 'Incoming'),
             Tab(text: 'Contacts'),
+            Tab(text: "Send Request",)
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          IncomingRequestsTab(),
-          ContactsTab(),
-        ],
+        children: const [ContactsTab(), IncomingRequestsTab(), SentRequestsTab()],
       ),
     );
   }

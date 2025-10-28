@@ -27,47 +27,68 @@ class IncomingRequestsTab extends StatelessWidget {
             final senderName = data['senderName'] ?? 'Unknown';
             final message = data['message'] ?? '';
 
-            return ListTile(
-              leading: CircleAvatar(
-                child: Text(senderName.isNotEmpty ? senderName[0] : '?'),
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              title: Text(senderName),
-              subtitle: Text(message.isEmpty ? 'sent you a request' : message),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.check, color: Colors.green),
-                    onPressed: () async {
-                      try {
-                        await service.acceptRequest(doc.id);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Request accepted')),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                      }
-                    },
+              child: ListTile(
+                leading: CircleAvatar(
+                  child: Text(
+                    senderName.isNotEmpty ? senderName[0].toUpperCase() : '?',
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.red),
-                    onPressed: () async {
-                      try {
-                        await service.rejectRequest(doc.id);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Request rejected')),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text('Error: $e')));
-                      }
-                    },
-                  ),
-                ],
+                ),
+                title: Text(
+                  senderName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  message.isEmpty ? 'sent you a friend request' : message,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.check, color: Colors.green),
+                      onPressed: () async {
+                        try {
+                          await service.acceptRequest(doc.id);
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              const SnackBar(content: Text('Request accepted')),
+                            );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(content: Text('Error: $e')),
+                            );
+                        }
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      onPressed: () async {
+                        try {
+                          await service.rejectRequest(doc.id);
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              const SnackBar(content: Text('Request rejected')),
+                            );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context)
+                            ..hideCurrentSnackBar()
+                            ..showSnackBar(
+                              SnackBar(content: Text('Error: $e')),
+                            );
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           },

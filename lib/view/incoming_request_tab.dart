@@ -1,31 +1,41 @@
 import 'package:chat_box/services/my_service/friend_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class IncomingRequestsTab extends StatelessWidget {
   const IncomingRequestsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     final service = FriendService();
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-    return StreamBuilder<List<QueryDocumentSnapshot>>(
-      stream: service.incomingRequestsStream(),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('friend_requests')
+          .where('receiverId', isEqualTo: currentUserId)
+          .where('status', isEqualTo: 'pending')
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        final docs = snapshot.data ?? [];
-        if (docs.isEmpty) {
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text("No incoming requests"));
         }
+
+        final docs = snapshot.data!.docs;
 
         return ListView.builder(
           itemCount: docs.length,
           itemBuilder: (context, i) {
-            final doc = docs[i];
-            final data = doc.data() as Map<String, dynamic>;
+            final data = docs[i].data() as Map<String, dynamic>;
+            final requestId = docs[i].id;
             final senderName = data['senderName'] ?? 'Unknown';
-            final message = data['message'] ?? '';
+            final message = data['message'] ?? 'sent you a friend request';
 
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -43,9 +53,7 @@ class IncomingRequestsTab extends StatelessWidget {
                   senderName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text(
-                  message.isEmpty ? 'sent you a friend request' : message,
-                ),
+                subtitle: Text(message),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -53,18 +61,20 @@ class IncomingRequestsTab extends StatelessWidget {
                       icon: const Icon(Icons.check, color: Colors.green),
                       onPressed: () async {
                         try {
-                          await service.acceptRequest(doc.id);
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
+                          await service.acceptRequest(requestId);
+
+                        
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Request accepted')),
                             );
+                          }
                         } catch (e) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Error: $e')),
                             );
+                          }
                         }
                       },
                     ),
@@ -72,18 +82,19 @@ class IncomingRequestsTab extends StatelessWidget {
                       icon: const Icon(Icons.close, color: Colors.red),
                       onPressed: () async {
                         try {
-                          await service.rejectRequest(doc.id);
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
+                          await service.rejectRequest(requestId);
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Request rejected')),
                             );
+                          }
                         } catch (e) {
-                          ScaffoldMessenger.of(context)
-                            ..hideCurrentSnackBar()
-                            ..showSnackBar(
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Error: $e')),
                             );
+                          }
                         }
                       },
                     ),

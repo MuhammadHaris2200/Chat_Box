@@ -32,15 +32,19 @@ class _FriendsScreenState extends State<FriendsScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Incoming'),
             Tab(text: 'Contacts'),
-            Tab(text: "Send Request",)
+            Tab(text: 'Incoming Requests'),
+            Tab(text: "Send Request"),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [ContactsTab(), IncomingRequestsTab(), SentRequestsTab()],
+        children: const [
+          ContactsTab(),
+          IncomingRequestsTab(),
+          SentRequestsTab(),
+        ],
       ),
     );
   }

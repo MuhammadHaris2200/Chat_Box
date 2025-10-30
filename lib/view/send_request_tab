@@ -69,11 +69,12 @@ class SentRequestsTab extends StatelessWidget {
                               : '?')
                           : null,
                     ),
-                    title: Text(receiverName,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                      message.isEmpty ? "Friend request" : message,
+                    title: Text(
+                      receiverName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    subtitle:
+                        Text(message.isEmpty ? "Friend request" : message),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -109,12 +110,18 @@ class SentRequestsTab extends StatelessWidget {
                             onPressed: () async {
                               try {
                                 await service.cancelRequest(doc.id);
+
+                                // ✅ Safety check to avoid 'deactivated widget' error
+                                if (!context.mounted) return;
+
                                 ScaffoldMessenger.of(context)
                                   ..hideCurrentSnackBar()
                                   ..showSnackBar(const SnackBar(
-                                      content:
-                                          Text("Friend request cancelled")));
+                                      content: Text(
+                                          "Friend request cancelled successfully")));
                               } catch (e) {
+                                if (!context.mounted) return;
+
                                 ScaffoldMessenger.of(context)
                                   ..hideCurrentSnackBar()
                                   ..showSnackBar(SnackBar(

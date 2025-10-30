@@ -234,9 +234,9 @@ class _SignupState extends State<Signup> {
                         Navigator.pushReplacementNamed(context, AppRoutes.home);
                       }
                     } catch (e) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      // ScaffoldMessenger.of(
+                      //   context,
+                      // ).showSnackBar(SnackBar(content: Text(e.toString()))); 
                     }
                   }
                 },

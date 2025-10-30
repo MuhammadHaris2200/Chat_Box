@@ -1,3 +1,4 @@
+import 'package:chat_box/add_status_screen.dart';
 import 'package:chat_box/view/bottom_nav_bar.dart';
 import 'package:chat_box/constants/app_colors.dart';
 import 'package:chat_box/services/my_service/status_service.dart';
@@ -26,7 +27,21 @@ class _MyStatusViewScreenState extends State<MyStatusViewScreen> {
     //final mq = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.blackColor,
+        child: const Icon(Icons.add, color: AppColors.whiteColor),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) {
+                return AddStatusScreen();
+              },
+            ),
+          );
+        },
+      ),
+      //backgroundColor: AppColors.lightBlue,
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
         title: const Text(
@@ -62,9 +77,9 @@ class _MyStatusViewScreenState extends State<MyStatusViewScreen> {
             } else {
               return StoryItem.text(
                 title: status.text ?? '',
-                backgroundColor: AppColors.peachColor,
+                backgroundColor: AppColors.black26,
                 textStyle: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 30,
                   color: AppColors.blackColor,
                 ),
               );

@@ -410,15 +410,16 @@ class _LoginScreenState extends State<LoginScreen> {
       bool success = await signInProvider.signIn();
       if (success) {
         // await _initializeZego(); // ✅ Initialize after successful login
-          await ZegoUIKitPrebuiltCallInvitationService().init(
-    appID: 1904149914,
-    appSign: "575027252986deab4d57d09ad2d261c1d3da24a8a0b4362004b0b533b64e66cf",
-    userID: FirebaseAuth.instance.currentUser!.uid,
-    userName: FirebaseAuth.instance.currentUser!.email ?? "User",
-    plugins: [ZegoUIKitSignalingPlugin()],
-  );
-  // Fluttertoast.showToast(msg: "Login successful!");
-  // Navigator.pushReplacementNamed(context, AppRoutes.bottomNavBar);
+        await ZegoUIKitPrebuiltCallInvitationService().init(
+          appID: 1904149914,
+          appSign:
+              "575027252986deab4d57d09ad2d261c1d3da24a8a0b4362004b0b533b64e66cf",
+          userID: FirebaseAuth.instance.currentUser!.uid,
+          userName: FirebaseAuth.instance.currentUser!.email ?? "User",
+          plugins: [ZegoUIKitSignalingPlugin()],
+        );
+        // Fluttertoast.showToast(msg: "Login successful!");
+        // Navigator.pushReplacementNamed(context, AppRoutes.bottomNavBar);
         Fluttertoast.showToast(msg: "Login successful!");
         Navigator.pushReplacementNamed(context, AppRoutes.bottomNavBar);
       }
@@ -521,16 +522,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty)
                     return "Password required";
-                  if (value.length < 6)
-                    return "At least 6 characters required";
+                  if (value.length < 6) return "At least 6 characters required";
                   return null;
                 },
                 decoration: InputDecoration(
                   labelText: "Password",
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    onPressed: () =>
-                        setState(() => _isPasswordVisible = !_isPasswordVisible),
+                    onPressed: () => setState(
+                      () => _isPasswordVisible = !_isPasswordVisible,
+                    ),
                     icon: Icon(
                       _isPasswordVisible
                           ? Icons.visibility
@@ -566,7 +567,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     : const Text(
                         "Log in",
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
 
@@ -587,6 +590,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 50),
             ],
           ),
         ),

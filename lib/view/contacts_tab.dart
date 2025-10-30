@@ -1,4 +1,5 @@
 import 'package:chat_box/services/my_service/friend_service.dart';
+import 'package:chat_box/view/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,15 +55,20 @@ class ContactsTab extends StatelessWidget {
                         : null,
                   ),
                   title: Text(name),
-                  subtitle: Text(
-                    "Tap to chat",
-                  ), // add navigation to chat screen
+                  subtitle: Text("Tap to chat"),
                   onTap: () {
-                    // open chat with friendId
-                    // ChatScreen(
-                    //   currentUserId: currentUid,
-                    //   otherUserId: friendId,
-                    // );
+                    //open chat with friendId
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) {
+                          return ChatScreen(
+                            currentUserId: currentUid,
+                            otherUserId: friendId,
+                          );
+                        },
+                      ),
+                    );
                   },
                 );
               },
